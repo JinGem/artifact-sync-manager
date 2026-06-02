@@ -1,0 +1,90 @@
+{
+  "name": "artifact-sync-manager",
+  "version": "1.0.0",
+  "description": "Windows desktop tool for internal artifact upload, download, and version management.",
+  "main": "out/main/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "node scripts/generate-icon.cjs && vue-tsc --noEmit && electron-vite build && node -e \"require('fs').cpSync('src/main/tray/tray-icon.png','out/main/tray-icon.png')\"",
+    "preview": "electron-vite preview",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "pack": "npm run build && electron-builder --win --config"
+  },
+  "build": {
+    "appId": "com.artifact-sync-manager.app",
+    "productName": "Artifact Sync Manager",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "out/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "src/main/tray/tray-icon.png",
+        "to": "tray-icon.png"
+      },
+      {
+        "from": "src/main/tray/app-icon.png",
+        "to": "app-icon.png"
+      }
+    ],
+    "win": {
+      "icon": "src/main/tray/app-icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": true
+    }
+  },
+  "keywords": [
+    "electron",
+    "vue",
+    "artifact",
+    "sync"
+  ],
+  "author": "Gem",
+  "license": "MIT",
+  "dependencies": {
+    "element-plus": "^2.11.4",
+    "pinia": "^3.0.3",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/postcss": "^4.1.2",
+    "@types/node": "^24.0.1",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "autoprefixer": "^10.4.21",
+    "electron": "^37.2.1",
+    "electron-builder": "^26.8.1",
+    "electron-vite": "^4.0.0",
+    "eslint": "^10.4.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-vue": "^10.9.1",
+    "postcss": "^8.5.3",
+    "prettier": "^3.8.3",
+    "sass": "^1.99.0",
+    "tailwindcss": "^4.1.2",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.59.4",
+    "vite": "^7.0.0",
+    "vite-plugin-vue-devtools": "^8.1.2",
+    "vue-tsc": "^3.0.1"
+  }
+}

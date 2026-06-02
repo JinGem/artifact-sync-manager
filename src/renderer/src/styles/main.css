@@ -1,0 +1,273 @@
+@import "tailwindcss";
+
+/* ===================================================================
+   Layer 0: 全局滚动容器 —— 滚动条锁定在 #app 内，html/body 不滚动
+   =================================================================== */
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  min-width: 320px;
+}
+
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ===================================================================
+   Layer 1: 基础重置 & 字体
+   =================================================================== */
+
+/* ===================================================================
+   Layer 2: 主题变量（集中配置，所有自定义样式引用此处）
+   =================================================================== */
+:root {
+  /* --- 背景色 --- */
+  --bg-deep: rgb(31 36 46 / 1);
+  --bg-gradient-from: rgb(52, 84, 109);
+  --bg-gradient-to: rgb(31 36 46 / 1);
+  --bg-overlay: rgba(8, 17, 28, 0.75);
+  --bg-glass: rgb(15 23 42 / 0.88);
+  --bg-card: rgb(15 23 42 / 0.55);
+  --bg-subtle: rgb(15 23 42 / 0.35);
+  --bg-white-5: rgba(255, 255, 255, 0.05);
+  --bg-white-8: rgba(255, 255, 255, 0.08);
+  --bg-input: rgb(0 0 0 / 0.1);
+  --bg-accent-cyan: rgb(21 94 117 / 0.4);
+  --bg-accent-cyan-light: rgba(103, 232, 249, 0.15);
+  --bg-accent-red: rgb(127 29 29 / 0.2);
+
+  /* --- 边框 --- */
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-dashed: rgba(255, 255, 255, 0.15);
+  --border-hover: rgba(103, 232, 249, 0.3);
+  --border-active: rgba(103, 232, 249, 0.5);
+  --border-danger: rgba(248, 113, 113, 0.4);
+
+  /* --- 文字色 --- */
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-tertiary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --text-accent: #67e8f9;
+  --text-accent-dim: rgba(103, 232, 249, 0.6);
+  --text-warning: #fbbf24;
+  --text-danger: #fca5a5;
+
+  /* --- 圆角 --- */
+  --radius-card: 16px;
+  --radius-xl: 12px;
+  --radius-lg: 8px;
+  --radius-md: 6px;
+
+  /* --- 阴影 --- */
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+  /* --- 模糊 --- */
+  --blur-overlay: 6px;
+
+  /* ===================================================================
+     Element Plus 全局 CSS 变量暗色覆盖
+     解决 --el-button-bg-color: var(--el-fill-color-blank) → #ffffff 等链式引用问题
+     =================================================================== */
+
+  /* Fill 色（按钮/输入框背景） */
+  --el-fill-color-blank: rgba(255, 255, 255, 0.05);
+  --el-fill-color: rgba(255, 255, 255, 0.08);
+  --el-fill-color-light: rgba(255, 255, 255, 0.04);
+  --el-fill-color-lighter: rgba(255, 255, 255, 0.02);
+  --el-fill-color-dark: rgba(255, 255, 255, 0.12);
+  --el-fill-color-darker: rgba(255, 255, 255, 0.15);
+
+  /* 边框色 */
+  --el-border-color: rgba(255, 255, 255, 0.1);
+  --el-border-color-light: rgba(255, 255, 255, 0.06);
+  --el-border-color-lighter: rgba(255, 255, 255, 0.03);
+  --el-border-color-extra-light: rgba(255, 255, 255, 0.01);
+  --el-border-color-dark: rgba(255, 255, 255, 0.14);
+  --el-border-color-darker: rgba(255, 255, 255, 0.17);
+
+  /* 文字色 */
+  --el-text-color-primary: #ffffff;
+  --el-text-color-regular: #e2e8f0;
+  --el-text-color-secondary: #94a3b8;
+  --el-text-color-placeholder: #64748b;
+  --el-text-color-disabled: #475569;
+
+  /* 背景色 */
+  --el-bg-color: rgb(15 23 42 / 0.88);
+  --el-bg-color-page: #08111c;
+  --el-bg-color-overlay: rgb(15 23 42 / 0.66);
+}
+
+/* ===================================================================
+   Layer 3: Element Plus 组件覆盖
+   （优先使用 Element Plus 内置 CSS 变量接口，零 !important 变量覆盖）
+   =================================================================== */
+
+/* --- 全局输入框暗色主题（Element Plus CSS 变量接口） --- */
+
+.el-input,
+.el-textarea {
+  --el-input-bg-color: var(--bg-input);
+  --el-input-border-color: var(--border-default);
+  --el-input-border-radius: var(--radius-lg);
+  --el-input-text-color: var(--text-secondary);
+  --el-input-placeholder-color: var(--text-muted);
+  --el-input-hover-border-color: var(--border-hover);
+  --el-input-focus-border-color: var(--border-active);
+  --el-input-icon-color: var(--text-muted);
+  --el-input-clear-hover-color: var(--text-accent);
+}
+
+/* 输入框聚焦发光 — Element Plus 默认只有 inset border，额外追加外层 glow */
+.el-input__wrapper.is-focus {
+  outline: 1px solid rgba(6, 182, 212, 0.3);
+  outline-offset: -1px;
+}
+
+/* Placeholder 透明度 — Element Plus 仅控制 color */
+.el-input__inner::placeholder,
+.el-textarea__inner::placeholder {
+  opacity: 0.5;
+}
+
+/* --- 保留 custom-input 作为显式覆盖的备选 --- */
+.custom-input .el-textarea__inner,
+.custom-input .el-input__wrapper {
+  --el-input-bg-color: var(--bg-input);
+  --el-input-border-color: var(--border-default);
+  --el-input-border-radius: var(--radius-lg);
+  --el-input-text-color: var(--text-secondary);
+  --el-input-placeholder-color: var(--text-muted);
+  --el-input-hover-border-color: var(--border-hover);
+  --el-input-focus-border-color: var(--border-active);
+}
+
+/* --- Element Plus 默认按钮主题覆盖（CSS 变量，无需 !important） --- */
+.el-button--default {
+  --el-button-bg-color: rgba(255, 255, 255, 0.05);
+  --el-button-border-color: rgba(255, 255, 255, 0.1);
+  --el-button-text-color: #e2e8f0;
+  --el-button-hover-bg-color: rgba(255, 255, 255, 0.1);
+  --el-button-hover-border-color: rgba(103, 232, 249, 0.3);
+  --el-button-hover-text-color: #67e8f9;
+  --el-button-active-bg-color: rgba(103, 232, 249, 0.15);
+  --el-button-active-border-color: rgba(103, 232, 249, 0.5);
+  --el-button-active-text-color: #67e8f9;
+  border-radius: var(--radius-lg);
+}
+
+/* --- Element Plus 默认按钮（plain 变体） --- */
+.el-button--default.is-plain {
+  --el-button-bg-color: transparent;
+  --el-button-border-color: rgba(255, 255, 255, 0.1);
+  --el-button-text-color: #e2e8f0;
+  --el-button-hover-bg-color: rgba(255, 255, 255, 0.08);
+  --el-button-hover-border-color: rgba(103, 232, 249, 0.3);
+  --el-button-hover-text-color: #67e8f9;
+  --el-button-active-bg-color: rgba(103, 232, 249, 0.12);
+  --el-button-active-border-color: rgba(103, 232, 249, 0.5);
+  --el-button-active-text-color: #67e8f9;
+}
+
+/* --- Element Plus 主要按钮主题覆盖（青色） --- */
+.el-button--primary {
+  --el-button-bg-color: #06b6d4;
+  --el-button-border-color: #06b6d4;
+  --el-button-text-color: #ffffff;
+  --el-button-hover-bg-color: #22d3ee;
+  --el-button-hover-border-color: #22d3ee;
+  --el-button-hover-text-color: #ffffff;
+  --el-button-active-bg-color: #0891b2;
+  --el-button-active-border-color: #0891b2;
+  --el-button-active-text-color: #ffffff;
+  border-radius: var(--radius-lg);
+}
+
+.el-button--primary.is-plain {
+  --el-button-bg-color: rgba(6, 182, 212, 0.12);
+  --el-button-border-color: rgba(6, 182, 212, 0.35);
+  --el-button-text-color: #67e8f9;
+  --el-button-hover-bg-color: rgba(6, 182, 212, 0.22);
+  --el-button-hover-border-color: rgba(6, 182, 212, 0.55);
+  --el-button-hover-text-color: #a5f3fc;
+  --el-button-active-bg-color: rgba(6, 182, 212, 0.3);
+  --el-button-active-border-color: rgba(6, 182, 212, 0.7);
+  --el-button-active-text-color: #a5f3fc;
+}
+
+/* --- Danger 按钮 Plain 变体微调 --- */
+.el-button--danger.is-plain {
+  --el-button-bg-color: rgba(248, 113, 113, 0.1);
+  --el-button-border-color: rgba(248, 113, 113, 0.3);
+  --el-button-text-color: #fca5a5;
+  --el-button-hover-bg-color: rgba(248, 113, 113, 0.2);
+  --el-button-hover-border-color: rgba(248, 113, 113, 0.5);
+  --el-button-hover-text-color: #fca5a5;
+  --el-button-active-bg-color: rgba(248, 113, 113, 0.3);
+  --el-button-active-border-color: rgba(248, 113, 113, 0.7);
+}
+
+/* --- Success 按钮 Plain 变体微调 --- */
+.el-button--success.is-plain {
+  --el-button-bg-color: rgba(52, 211, 153, 0.1);
+  --el-button-border-color: rgba(52, 211, 153, 0.3);
+  --el-button-text-color: #6ee7b7;
+  --el-button-hover-bg-color: rgba(52, 211, 153, 0.2);
+  --el-button-hover-border-color: rgba(52, 211, 153, 0.5);
+  --el-button-hover-text-color: #a7f3d0;
+  --el-button-active-bg-color: rgba(52, 211, 153, 0.3);
+  --el-button-active-border-color: rgba(52, 211, 153, 0.7);
+}
+
+/* --- Element Plus 通知组件暗色主题覆盖 --- */
+.el-notification {
+  --el-notification-bg-color: var(--bg-glass);
+  --el-notification-border-color: var(--border-default);
+  --el-notification-title-color: var(--text-primary);
+  --el-notification-content-color: var(--text-secondary);
+  --el-notification-radius: var(--radius-lg);
+  --el-notification-shadow: var(--shadow-card);
+  border: 1px solid var(--border-default);
+  backdrop-filter: blur(var(--blur-overlay));
+}
+
+/* ===================================================================
+   Layer 4: 全局样式补丁
+   =================================================================== */
+
+/* 按钮禁用态：保持原有颜色不变，调低透明度 */
+.el-button.is-disabled,
+.el-button.is-disabled:active,
+.el-button.is-disabled:focus,
+.el-button.is-disabled:hover {
+  opacity: 0.2 !important;
+}
+
+/* 暗色主题滚动条（全局） */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
