@@ -1,13 +1,8 @@
-import { readdir, stat, mkdir, copyFile, writeFile, rm, readFile } from "node:fs/promises";
+import { readdir, stat, mkdir, copyFile, writeFile, rm, readFile } from "original-fs/promises";
 import { join, relative, basename } from "node:path";
 
 import { compileRules, isIgnored, type IgnoreRule } from "./ignore";
 import { ErrorCode } from "./../errors";
-
-// Bypass Electron's asar interception — reuses withNoAsar instead of duplicating logic
-const copyFileNoAsar = async (src: string, dest: string): Promise<void> => {
-  await withNoAsar(() => copyFile(src, dest));
-};
 
 export interface ScannedFile {
   relativePath: string;
@@ -51,20 +46,6 @@ const getCancelScope = (): CancelScope => {
   return scope;
 };
 
-/** Bypass Electron's asar interception so that `stat` and `readdir` don't
- *  cause Electron's C++ asar layer to open & cache `.asar` archives.
- *  Without this, `.asar` files encountered during scanning get locked
- *  persistently inside the Electron process, preventing deletion. */
-const withNoAsar = <T>(fn: () => Promise<T>): Promise<T> => {
-  const prev = (process as NodeJS.Process & { noAsar?: boolean }).noAsar;
-  (process as NodeJS.Process & { noAsar?: boolean }).noAsar = true;
-  try {
-    return fn();
-  } finally {
-    (process as NodeJS.Process & { noAsar?: boolean }).noAsar = prev;
-  }
-};
-
 /** Shared walk logic used by both scanFiles and scanRemoteFiles.
  *  Walks directory tree, applies ignore rules, collects matching files
  *  and optionally collects ignored files for preview. */
@@ -79,7 +60,7 @@ const walkDirectory = async (
   let entries: string[];
 
   try {
-    entries = await withNoAsar(() => readdir(dir, { withFileTypes: false }));
+    entries = await readdir(dir, { withFileTypes: false });
   } catch {
     return;
   }
@@ -91,7 +72,7 @@ const walkDirectory = async (
     let entryStat;
 
     try {
-      entryStat = await withNoAsar(() => stat(fullPath));
+      entryStat = await stat(fullPath);
     } catch {
       continue;
     }
@@ -243,7 +224,7 @@ export const uploadVersion = async (
 
     try {
       await mkdir(destDir, { recursive: true });
-      await copyFileNoAsar(join(options.localPath, file.relativePath), destPath);
+      await copyFile(join(options.localPath, file.relativePath), destPath);
       uploadedCount++;
 
       onProgress({
@@ -380,7 +361,7 @@ export const downloadVersion = async (
 
     try {
       await mkdir(destDir, { recursive: true });
-      await copyFileNoAsar(srcPath, destPath);
+      await copyFile(srcPath, destPath);
       downloadedCount++;
 
       onProgress({

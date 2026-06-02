@@ -12,6 +12,7 @@
 | 🔴     | **R1. ProjectDetailView 未传 description**               | workbuddy 回滚丢失代码                                   | 新增 `downloadDescription` ref，`startDownload()` 查找版本描述，模板传 `:description` |
 | 🔴     | **R2. 设置页缺少角色选择器**                             | F4 设置页功能未闭环                                      | 操作者卡片增加角色选择 radio；`handleSave` 改用 `saveUserProfile` 同步保存角色       |
 | 🔶     | **R3. UploadDialog 未传 projectName 给 IPC 和 task 参数** | IPC 调用和 task 参数均遗漏 `projectName`                 | `startUpload` 和 task params 补充 `projectName`                                      |
+| 🎨     | **R4. 首页 hero 区域版本号硬编码**                       | 直接写死 `v1.0.0`，未关联 `package.json` 的 version     | 改为 `v{{ api.version }}`，通过 `__APP_VERSION__` 构建时注入动态读取                 |
 
 ## ✅ 已修复 (2026-05-20)
 
@@ -26,7 +27,7 @@
 | **高** | **B1. 忽略规则不支持文件夹模式**         | 目录路径带尾 `/`，正则和 `split('/').pop()` 均无法正确匹配                  | `ignore.ts` 增加去尾 `/` 后再匹配                                                  |
 | **中** | **B2. 配置导入导出包含操作者信息**       | 导出完整 state，导入自动合并 settings                                       | 导出仅含 `projects`；`importState` 跳过 `settings`；UI 不赋值                      |
 | **高** | **B3. 重试"对象不可克隆"**               | Pinia reactive proxy 无法被 Electron 结构化克隆                             | `taskStore.ts` 传入 IPC 前 `toRaw` + `JSON.parse(JSON.stringify)` 脱敏             |
-| **中** | **B4. `.asar` 文件 BUSY 占用**           | Electron C++ asar 拦截器 `stat`/`readdir` 时打开并缓存 .asar 文件           | 提取 `withNoAsar<T>` 包装后导出，`version/index.ts` 删除操作中也使用               |
+| **中** | **B4. `.asar` 文件 BUSY 占用**           | Electron C++ asar 拦截器 `stat`/`readdir` 时打开并缓存 .asar 文件           | 主进程全面迁移至 `original-fs/promises`，移除 `process.noAsar` / `withNoAsar` 模式 |
 | 🔴     | **B5. 版本删除路径穿越 + 符号链接攻击**  | `fs.rm({ recursive: true })` 跟随符号链接；`remoteDirectory` 无路径越界校验 | 新增 `safeDelete` 不跟随符号链接；`resolve` 校验路径范围；`lstat` 拒绝顶层符号链接 |
 | **高** | **B6. Tailwind v4 CSS 构建警告**         | `var(--spacing)*11` 在任意值中被误解析为 `var(--spacing*11)` 无效语法       | 改为字面量 `calc(100vh-44px)` 避免经过 Tailwind 间距系统解析                       |
 | P2     | P2-1. `utils/errors.ts` 死代码           | 渲染层无文件引用该模块                                                      | 删除 `src/renderer/src/utils/errors.ts`                                            |

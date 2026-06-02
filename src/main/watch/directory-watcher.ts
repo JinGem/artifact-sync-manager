@@ -1,4 +1,4 @@
-import { readdir } from "node:fs/promises";
+import { readdir } from "original-fs/promises";
 import { watch, type FSWatcher } from "node:fs";
 import { normalize } from "node:path";
 

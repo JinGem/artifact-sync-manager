@@ -1,8 +1,10 @@
 import { contextBridge, ipcRenderer } from "electron";
 
+declare const __APP_VERSION__: string;
+
 contextBridge.exposeInMainWorld("artifactSync", {
   appName: "Artifact Sync Manager",
-  version: "1.0.0",
+  version: __APP_VERSION__,
   getState: () => ipcRenderer.invoke("config:get-state"),
   saveOperatorName: (operatorName: string) =>
     ipcRenderer.invoke("config:save-operator-name", operatorName),

@@ -29,7 +29,7 @@
             effect="dark"
             class="!h-5 !px-1.5 !text-[11px] !leading-5 !border-cyan-400/30 !bg-cyan-950/30 !text-cyan-300"
           >
-            v1.0.0
+            v{{ api.version }}
           </el-tag>
         </div>
         <div class="relative mt-5 flex items-center gap-4">
