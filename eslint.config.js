@@ -5,18 +5,10 @@ import prettierConfig from "eslint-config-prettier";
 import prettierPlugin from "eslint-plugin-prettier";
 import vueParser from "vue-eslint-parser";
 import tsParser from "@typescript-eslint/parser";
+import * as prettier from "prettier";
 
-const prettierOptions = {
-  semi: true,
-  singleQuote: false,
-  trailingComma: "all",
-  printWidth: 100,
-  tabWidth: 2,
-  endOfLine: "lf",
-  bracketSameLine: false,
-  arrowParens: "always",
-  vueIndentScriptAndStyle: false,
-};
+// @ts-expect-error - resolveConfig.sync 运行时存在但类型未暴露
+const prettierOptions = prettier.resolveConfig.sync(import.meta.dirname);
 
 export default [
   {
