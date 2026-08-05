@@ -94,6 +94,7 @@ Electron + Vue 3 + TypeScript + Tailwind CSS + Element Plus（SCSS 源文件导�
 4. 避免过早优化
 5. 优先让功能闭环，再逐步美化或重构
 6. 不要为了方便而绕开项目既定边界
+7. 应用内所有版本号必须从 `package.json` 的 `version` 字段动态读取，通过构建注入（`__APP_VERSION__`）+ preload `contextBridge` 暴露给渲染层，不得在任何 UI 位置硬编码
 
 ## UI 与交互原则
 
