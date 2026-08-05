@@ -66,7 +66,8 @@
               placeholder="使用 .gitignore 风格规则，例如：dist/"
             />
             <p class="mt-1 text-xs text-slate-400">
-              可用 `!` 取反重新包含文件（如 `!src/test.vue`），但父目录已被排除时（如 `src/`）无法重新包含。
+              可用 `!` 取反重新包含文件（如 `!src/test.vue`），但父目录已被排除时（如
+              `src/`）无法重新包含。
             </p>
           </div>
         </el-form-item>
@@ -80,7 +81,8 @@
               placeholder="使用 .gitignore 风格规则，例如：*.log"
             />
             <p class="mt-1 text-xs text-slate-400">
-              可用 `!` 取反重新包含文件（如 `!src/test.vue`），但父目录已被排除时（如 `src/`）无法重新包含。
+              可用 `!` 取反重新包含文件（如 `!src/test.vue`），但父目录已被排除时（如
+              `src/`）无法重新包含。
             </p>
           </div>
         </el-form-item>
