@@ -96,6 +96,12 @@ Electron + Vue 3 + TypeScript + Tailwind CSS + Element Plus（SCSS 源文件导�
 6. 不要为了方便而绕开项目既定边界
 7. 应用内所有版本号必须从 `package.json` 的 `version` 字段动态读取，通过构建注入（`__APP_VERSION__`）+ preload `contextBridge` 暴露给渲染层，不得在任何 UI 位置硬编码
 
+## 提交、CI 与发版规范
+
+- 提交信息遵循 Conventional Commits（`<type>: <summary>`，类型见 `AGENTS.md`），由 husky + commitlint + lint-staged 强制：`pre-commit` 自动格式化/检查暂存文件，`commit-msg` 校验格式，`pre-push` 运行 typecheck。
+- GitHub Actions 在 push/PR 时运行 lint、typecheck、build 和 Windows 打包验证；tag `v*` 触发安装包上传 GitHub Release。
+- 应用版本号由 release-please 依据提交类型自动递进并生成 `CHANGELOG.md`，`package.json` 是唯一版本来源。
+
 ## UI 与交互原则
 
 1. 路径信息必须清晰展示

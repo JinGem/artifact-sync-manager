@@ -11,7 +11,13 @@
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "prepare": "husky",
     "pack": "npm run build && electron-builder --win --config"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,vue,js,mjs,cjs}": [
+      "eslint --fix"
+    ]
   },
   "build": {
     "appId": "com.artifact-sync-manager.app",
@@ -48,6 +54,12 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "deleteAppDataOnUninstall": true
+    },
+    "artifactName": "${name}-Setup-${version}.${ext}",
+    "publish": {
+      "provider": "github",
+      "owner": "JinGem",
+      "repo": "artifact-sync-manager"
     }
   },
   "keywords": [
@@ -65,6 +77,8 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.1.2",
     "@types/node": "^24.0.1",
@@ -77,6 +91,8 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-vue": "^10.9.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "postcss": "^8.5.3",
     "prettier": "^3.8.3",
     "sass": "^1.99.0",

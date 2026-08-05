@@ -22,6 +22,8 @@
 - `npm run preview` — 预览生产构建。
 - `npm run pack` — 构建并生成 Windows NSIS 安装包到 `release/`。
 
+GitHub Actions 会在 push/PR 时自动执行 `lint`、`typecheck`、`build` 与 Windows 打包验证；推送到 tag `v*` 时自动打包并上传安装包到 GitHub Release。
+
 ## 代码风格与命名约定
 
 - TypeScript 启用严格模式；使用路径别名 `@main/*`、`@renderer/*`、`@shared/*`。
@@ -36,7 +38,9 @@
 
 ## 提交与 Pull Request 规范
 
-- 提交信息遵循 `<type>: <summary>` 格式（如 `feat:`、`fix:`、`chore:`）；近期历史在类型后使用简洁的中文摘要。
+- 提交信息遵循 `<type>: <summary>` 格式，由 commitlint 强制校验；类型限定为 `feat`、`fix`、`docs`、`style`、`refactor`、`perf`、`test`、`build`、`ci`、`chore`、`revert`、`init`，类型后使用简洁的中文摘要。
+- husky 本地钩子：`pre-commit` 自动对暂存文件运行 ESLint/Prettier，`commit-msg` 校验提交格式，`pre-push` 自动运行 typecheck。提交前不要绕过钩子（`--no-verify`）。
 - 保持小且聚焦的提交，不要混入无关模块的改动。
 - 提交 PR 前运行 lint、typecheck 和 build。若改动影响产品边界或架构，同步更新 `CONTEXT.md` 或 `ARCHITECTURE.md`。
 - PR 应说明问题与解决方案、关联相关 issue，UI 改动需附带截图。
+- 发版由 release-please 根据 Conventional Commits 自动推断版本（`fix` → patch、`feat` → minor、破坏性变更 → major），自动更新 `package.json` 版本与 `CHANGELOG.md` 并打 tag；版本号必须保持单一来源（`package.json`），不得手动与 tag 脱节。
