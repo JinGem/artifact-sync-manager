@@ -58,21 +58,31 @@
         </el-form-item>
 
         <el-form-item label="上传规则" class="md:col-span-2">
-          <el-input
-            v-model="form.uploadRules"
-            type="textarea"
-            :rows="3"
-            placeholder="使用 .gitignore 风格规则，例如：dist/"
-          />
+          <div class="w-full">
+            <el-input
+              v-model="form.uploadRules"
+              type="textarea"
+              :rows="3"
+              placeholder="使用 .gitignore 风格规则，例如：dist/"
+            />
+            <p class="mt-1 text-xs text-slate-400">
+              可用 `!` 取反重新包含文件（如 `!src/test.vue`），但父目录已被排除时（如 `src/`）无法重新包含。
+            </p>
+          </div>
         </el-form-item>
 
         <el-form-item label="下载规则" class="md:col-span-2">
-          <el-input
-            v-model="form.downloadRules"
-            type="textarea"
-            :rows="3"
-            placeholder="使用 .gitignore 风格规则，例如：*.log"
-          />
+          <div class="w-full">
+            <el-input
+              v-model="form.downloadRules"
+              type="textarea"
+              :rows="3"
+              placeholder="使用 .gitignore 风格规则，例如：*.log"
+            />
+            <p class="mt-1 text-xs text-slate-400">
+              可用 `!` 取反重新包含文件（如 `!src/test.vue`），但父目录已被排除时（如 `src/`）无法重新包含。
+            </p>
+          </div>
         </el-form-item>
       </div>
     </el-form>
