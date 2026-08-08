@@ -3,257 +3,321 @@
 /* ===================================================================
    Layer 0: 全局滚动容器 —— 滚动条锁定在 #app 内，html/body 不滚动
    =================================================================== */
-html {
-  overflow: hidden;
-  height: 100%;
-}
-
-body {
-  overflow: hidden;
-  height: 100%;
-  margin: 0;
-  min-width: 320px;
-}
-
+html,
+body,
 #app {
   height: 100%;
   overflow: hidden;
 }
 
-/* ===================================================================
-   Layer 1: 基础重置 & 字体
-   =================================================================== */
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--as-page);
+  color: var(--as-fg);
+}
 
 /* ===================================================================
-   Layer 2: 主题变量（集中配置，所有自定义样式引用此处）
+   Layer 1: 基础重置 & 字体 & color-scheme（浅色为主，跟随系统暗色）
    =================================================================== */
 :root {
-  /* --- 背景色 --- */
-  --bg-deep: rgb(31 36 46 / 1);
-  --bg-gradient-from: rgb(52, 84, 109);
-  --bg-gradient-to: rgb(31 36 46 / 1);
-  --bg-overlay: rgba(8, 17, 28, 0.75);
-  --bg-glass: rgb(15 23 42 / 0.88);
-  --bg-card: rgb(15 23 42 / 0.55);
-  --bg-subtle: rgb(15 23 42 / 0.35);
-  --bg-white-5: rgba(255, 255, 255, 0.05);
-  --bg-white-8: rgba(255, 255, 255, 0.08);
-  --bg-input: rgb(0 0 0 / 0.1);
-  --bg-accent-cyan: rgb(21 94 117 / 0.4);
-  --bg-accent-cyan-light: rgba(103, 232, 249, 0.15);
-  --bg-accent-red: rgb(127 29 29 / 0.2);
-
-  /* --- 边框 --- */
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-dashed: rgba(255, 255, 255, 0.15);
-  --border-hover: rgba(103, 232, 249, 0.3);
-  --border-active: rgba(103, 232, 249, 0.5);
-  --border-danger: rgba(248, 113, 113, 0.4);
-
-  /* --- 文字色 --- */
-  --text-primary: #ffffff;
-  --text-secondary: #e2e8f0;
-  --text-tertiary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --text-subtle: #64748b;
-  --text-accent: #67e8f9;
-  --text-accent-dim: rgba(103, 232, 249, 0.6);
-  --text-warning: #fbbf24;
-  --text-danger: #fca5a5;
-
-  /* --- 圆角 --- */
-  --radius-card: 16px;
-  --radius-xl: 12px;
-  --radius-lg: 8px;
-  --radius-md: 6px;
-
-  /* --- 阴影 --- */
-  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-
-  /* --- 模糊 --- */
-  --blur-overlay: 6px;
-
-  /* ===================================================================
-     Element Plus 全局 CSS 变量暗色覆盖
-     解决 --el-button-bg-color: var(--el-fill-color-blank) → #ffffff 等链式引用问题
-     =================================================================== */
-
-  /* Fill 色（按钮/输入框背景） */
-  --el-fill-color-blank: rgba(255, 255, 255, 0.05);
-  --el-fill-color: rgba(255, 255, 255, 0.08);
-  --el-fill-color-light: rgba(255, 255, 255, 0.04);
-  --el-fill-color-lighter: rgba(255, 255, 255, 0.02);
-  --el-fill-color-dark: rgba(255, 255, 255, 0.12);
-  --el-fill-color-darker: rgba(255, 255, 255, 0.15);
-
-  /* 边框色 */
-  --el-border-color: rgba(255, 255, 255, 0.1);
-  --el-border-color-light: rgba(255, 255, 255, 0.06);
-  --el-border-color-lighter: rgba(255, 255, 255, 0.03);
-  --el-border-color-extra-light: rgba(255, 255, 255, 0.01);
-  --el-border-color-dark: rgba(255, 255, 255, 0.14);
-  --el-border-color-darker: rgba(255, 255, 255, 0.17);
-
-  /* 文字色 */
-  --el-text-color-primary: #ffffff;
-  --el-text-color-regular: #e2e8f0;
-  --el-text-color-secondary: #94a3b8;
-  --el-text-color-placeholder: #64748b;
-  --el-text-color-disabled: #475569;
-
-  /* 背景色 */
-  --el-bg-color: rgb(15 23 42 / 0.88);
-  --el-bg-color-page: #08111c;
-  --el-bg-color-overlay: rgb(15 23 42 / 0.66);
+  color-scheme: light dark;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 /* ===================================================================
-   Layer 3: Element Plus 组件覆盖
-   （优先使用 Element Plus 内置 CSS 变量接口，零 !important 变量覆盖）
+   Layer 2: 设计令牌（GitHub 基底 × 哆啦A梦点缀色，light-dark() 跟随系统）
+   =================================================================== */
+:root {
+  /* --- 背景 --- */
+  --as-page: light-dark(#ffffff, #0d1117);
+  --as-canvas: light-dark(#f6f8fa, #161b22);
+  --as-canvas-2: light-dark(#eaeef2, #21262d);
+
+  /* --- 边框 --- */
+  --as-line: light-dark(#d0d7de, #30363d);
+  --as-line-soft: light-dark(#d8dee4, #21262d);
+  --as-line-strong: light-dark(#afb8c1, #3d444d);
+
+  /* --- 文字 --- */
+  --as-fg: light-dark(#1f2328, #e6edf3);
+  --as-fg-2: light-dark(#3d444d, #c9d1d9);
+  --as-muted: light-dark(#59636e, #9198a1);
+  --as-subtle: light-dark(#818b98, #6e7681);
+
+  /* --- 哆啦A梦蓝（主色/链接/选中） --- */
+  --as-accent: light-dark(#0099ff, #4aa3ff);
+  --as-accent-hover: light-dark(#007ee0, #63b3ff);
+  --as-accent-soft: light-dark(rgba(0, 153, 255, 0.1), rgba(74, 163, 255, 0.16));
+  --as-accent-line: light-dark(rgba(0, 153, 255, 0.32), rgba(74, 163, 255, 0.38));
+
+  /* --- 红鼻（危险/删除） --- */
+  --as-danger: light-dark(#cf222e, #ff7b72);
+  --as-danger-soft: light-dark(rgba(207, 34, 46, 0.08), rgba(255, 123, 114, 0.12));
+  --as-danger-line: light-dark(rgba(207, 34, 46, 0.35), rgba(255, 123, 114, 0.4));
+
+  /* --- 铃铛黄（警告） --- */
+  --as-warning: light-dark(#9a6700, #d29922);
+  --as-warning-soft: light-dark(#fff8c5, #3a2d12);
+  --as-warning-line: light-dark(#d4a72c, #9e6a03);
+
+  /* --- 语义绿（成功/完成） --- */
+  --as-success: light-dark(#1a7f37, #3fb950);
+  --as-success-soft: light-dark(rgba(26, 127, 55, 0.1), rgba(63, 185, 80, 0.15));
+  --as-success-line: light-dark(rgba(26, 127, 55, 0.35), rgba(63, 185, 80, 0.4));
+
+  /* --- 圆角 / 阴影 / 字体 --- */
+  --as-radius-sm: 6px;
+  --as-radius-md: 8px;
+  --as-radius-lg: 10px;
+  --as-shadow-sm: light-dark(0 1px 0 rgba(31, 35, 40, 0.04), 0 1px 0 rgba(1, 4, 9, 0.4));
+  --as-shadow-md: light-dark(0 1px 3px rgba(31, 35, 40, 0.12), 0 4px 12px rgba(1, 4, 9, 0.5));
+  --as-shadow-lg: light-dark(0 8px 24px rgba(31, 35, 40, 0.16), 0 8px 24px rgba(1, 4, 9, 0.7));
+  --as-font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial,
+    sans-serif;
+  --as-font-mono:
+    ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "Liberation Mono",
+    monospace;
+}
+
+/* ===================================================================
+   Tailwind v4 主题映射：bg-page / text-fg / border-line / bg-accent-soft ...
+   =================================================================== */
+@theme {
+  --color-page: var(--as-page);
+  --color-canvas: var(--as-canvas);
+  --color-canvas-2: var(--as-canvas-2);
+  --color-line: var(--as-line);
+  --color-line-soft: var(--as-line-soft);
+  --color-line-strong: var(--as-line-strong);
+  --color-fg: var(--as-fg);
+  --color-fg-2: var(--as-fg-2);
+  --color-muted: var(--as-muted);
+  --color-subtle: var(--as-subtle);
+  --color-accent: var(--as-accent);
+  --color-accent-hover: var(--as-accent-hover);
+  --color-accent-soft: var(--as-accent-soft);
+  --color-accent-line: var(--as-accent-line);
+  --color-danger: var(--as-danger);
+  --color-danger-soft: var(--as-danger-soft);
+  --color-danger-line: var(--as-danger-line);
+  --color-warning: var(--as-warning);
+  --color-warning-soft: var(--as-warning-soft);
+  --color-warning-line: var(--as-warning-line);
+  --color-success: var(--as-success);
+  --color-success-soft: var(--as-success-soft);
+  --color-success-line: var(--as-success-line);
+  --font-sans: var(--as-font);
+  --font-mono: var(--as-font-mono);
+  --radius-sm: var(--as-radius-sm);
+  --radius-md: var(--as-radius-md);
+  --radius-lg: var(--as-radius-lg);
+  --shadow-sm: var(--as-shadow-sm);
+  --shadow-md: var(--as-shadow-md);
+  --shadow-lg: var(--as-shadow-lg);
+}
+
+/* ===================================================================
+   Layer 2: Element Plus 全局 CSS 变量覆盖（GitHub 语义色 + 表面/边框/文字）
+   =================================================================== */
+:root {
+  /* --- 语义色（哆啦A梦点缀） --- */
+  --el-color-primary: var(--as-accent);
+  --el-color-primary-light-3: light-dark(#33adff, #6cb6ff);
+  --el-color-primary-light-5: light-dark(#66c2ff, #8fc7ff);
+  --el-color-primary-light-7: light-dark(#99d6ff, #b0dbff);
+  --el-color-primary-light-8: light-dark(#b3e0ff, #c4e6ff);
+  --el-color-primary-light-9: light-dark(#d9f0ff, #d9edff);
+  --el-color-primary-dark-2: light-dark(#0080e0, #3d8fe0);
+
+  --el-color-success: var(--as-success);
+  --el-color-success-light-3: light-dark(#3f9c58, #55c46a);
+  --el-color-success-light-5: light-dark(#6ab37f, #72cf87);
+  --el-color-success-light-7: light-dark(#96cba5, #93dca6);
+  --el-color-success-light-8: light-dark(#aed7b9, #a5e2b6);
+  --el-color-success-light-9: light-dark(#e3f4e7, #d3f0db);
+  --el-color-success-dark-2: light-dark(#166633, #33a048);
+
+  --el-color-danger: var(--as-danger);
+  --el-color-danger-light-3: light-dark(#d84854, #ff948e);
+  --el-color-danger-light-5: light-dark(#df6d77, #ffa9a5);
+  --el-color-danger-light-7: light-dark(#e7969d, #ffc1be);
+  --el-color-danger-light-8: light-dark(#ecabb1, #ffd0ce);
+  --el-color-danger-light-9: light-dark(#fbe0e2, #ffdfdd);
+  --el-color-danger-dark-2: light-dark(#a51c26, #e06058);
+
+  --el-color-warning: var(--as-warning);
+  --el-color-warning-light-3: light-dark(#b98a26, #dba83b);
+  --el-color-warning-light-5: light-dark(#cda254, #e3bd61);
+  --el-color-warning-light-7: light-dark(#ddbd87, #ead08c);
+  --el-color-warning-light-8: light-dark(#e6cba1, #f0dcae);
+  --el-color-warning-light-9: light-dark(#fbf1d8, #f5ead0);
+  --el-color-warning-dark-2: light-dark(#7b5200, #a87a1c);
+
+  /* --- Fill（按钮/输入框背景） --- */
+  --el-fill-color-blank: var(--as-page);
+  --el-fill-color: var(--as-canvas);
+  --el-fill-color-light: var(--as-canvas);
+  --el-fill-color-lighter: var(--as-canvas);
+  --el-fill-color-extra-light: var(--as-canvas);
+  --el-fill-color-dark: var(--as-canvas-2);
+  --el-fill-color-darker: var(--as-line-strong);
+
+  /* --- 边框 --- */
+  --el-border-color: var(--as-line);
+  --el-border-color-light: var(--as-line-soft);
+  --el-border-color-lighter: var(--as-line-soft);
+  --el-border-color-extra-light: var(--as-line-soft);
+  --el-border-color-dark: var(--as-line-strong);
+  --el-border-color-darker: var(--as-line-strong);
+  --el-border-radius-base: var(--as-radius-sm);
+  --el-border-radius-small: 4px;
+  --el-border-radius-round: 999px;
+
+  /* --- 文字 --- */
+  --el-text-color-primary: var(--as-fg);
+  --el-text-color-regular: var(--as-fg-2);
+  --el-text-color-secondary: var(--as-muted);
+  --el-text-color-placeholder: var(--as-subtle);
+  --el-text-color-disabled: var(--as-subtle);
+
+  /* --- 背景 --- */
+  --el-bg-color: var(--as-page);
+  --el-bg-color-page: var(--as-page);
+  --el-bg-color-overlay: var(--as-page);
+}
+
+/* ===================================================================
+   Layer 3: Element Plus 组件级 CSS 变量覆盖（零 !important）
    =================================================================== */
 
-/* --- 全局输入框暗色主题（Element Plus CSS 变量接口） --- */
+/* --- 按钮统一圆角 --- */
+.el-button {
+  border-radius: var(--as-radius-sm);
+}
 
+/* --- 默认按钮 --- */
+.el-button--default {
+  --el-button-bg-color: var(--as-page);
+  --el-button-border-color: var(--as-line);
+  --el-button-text-color: var(--as-fg-2);
+  --el-button-hover-bg-color: var(--as-canvas);
+  --el-button-hover-border-color: var(--as-line-strong);
+  --el-button-hover-text-color: var(--as-fg);
+  --el-button-active-bg-color: var(--as-canvas-2);
+  --el-button-active-border-color: var(--as-line-strong);
+  --el-button-active-text-color: var(--as-fg);
+}
+
+/* --- 主要按钮（哆啦蓝） --- */
+.el-button--primary {
+  --el-button-bg-color: var(--as-accent);
+  --el-button-border-color: var(--as-accent);
+  --el-button-text-color: #ffffff;
+  --el-button-hover-bg-color: var(--as-accent-hover);
+  --el-button-hover-border-color: var(--as-accent-hover);
+  --el-button-hover-text-color: #ffffff;
+  --el-button-active-bg-color: var(--as-accent-hover);
+  --el-button-active-border-color: var(--as-accent-hover);
+  --el-button-active-text-color: #ffffff;
+}
+
+/* --- 输入框/文本域 --- */
 .el-input,
 .el-textarea {
-  --el-input-bg-color: var(--bg-input);
-  --el-input-border-color: var(--border-default);
-  --el-input-border-radius: var(--radius-lg);
-  --el-input-text-color: var(--text-secondary);
-  --el-input-placeholder-color: var(--text-muted);
-  --el-input-hover-border-color: var(--border-hover);
-  --el-input-focus-border-color: var(--border-active);
-  --el-input-icon-color: var(--text-muted);
-  --el-input-clear-hover-color: var(--text-accent);
+  --el-input-bg-color: var(--as-page);
+  --el-input-border-color: var(--as-line);
+  --el-input-border-radius: var(--as-radius-sm);
+  --el-input-text-color: var(--as-fg-2);
+  --el-input-placeholder-color: var(--as-subtle);
+  --el-input-hover-border-color: var(--as-line-strong);
+  --el-input-focus-border-color: var(--as-accent);
+  --el-input-icon-color: var(--as-muted);
+  --el-input-clear-hover-color: var(--as-accent);
 }
 
-/* 输入框聚焦发光 — Element Plus 默认只有 inset border，额外追加外层 glow */
-.el-input__wrapper.is-focus {
-  outline: 1px solid rgba(6, 182, 212, 0.3);
-  outline-offset: -1px;
+.el-input__wrapper,
+.el-textarea__inner {
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
-/* Placeholder 透明度 — Element Plus 仅控制 color */
-.el-input__inner::placeholder,
-.el-textarea__inner::placeholder {
-  opacity: 0.5;
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  box-shadow:
+    0 0 0 1px var(--as-accent) inset,
+    0 0 0 3px var(--as-accent-soft);
 }
 
-/* --- 保留 custom-input 作为显式覆盖的备选 --- */
-.custom-input .el-textarea__inner,
-.custom-input .el-input__wrapper {
-  --el-input-bg-color: var(--bg-input);
-  --el-input-border-color: var(--border-default);
-  --el-input-border-radius: var(--radius-lg);
-  --el-input-text-color: var(--text-secondary);
-  --el-input-placeholder-color: var(--text-muted);
-  --el-input-hover-border-color: var(--border-hover);
-  --el-input-focus-border-color: var(--border-active);
+/* --- 卡片 --- */
+.el-card {
+  --el-card-border-color: var(--as-line);
+  --el-card-bg-color: var(--as-page);
+  --el-card-border-radius: var(--as-radius-md);
+  box-shadow: var(--as-shadow-sm);
 }
 
-/* --- Element Plus 默认按钮主题覆盖（CSS 变量，无需 !important） --- */
-.el-button--default {
-  --el-button-bg-color: rgba(255, 255, 255, 0.05);
-  --el-button-border-color: rgba(255, 255, 255, 0.1);
-  --el-button-text-color: #e2e8f0;
-  --el-button-hover-bg-color: rgba(255, 255, 255, 0.1);
-  --el-button-hover-border-color: rgba(103, 232, 249, 0.3);
-  --el-button-hover-text-color: #67e8f9;
-  --el-button-active-bg-color: rgba(103, 232, 249, 0.15);
-  --el-button-active-border-color: rgba(103, 232, 249, 0.5);
-  --el-button-active-text-color: #67e8f9;
-  border-radius: var(--radius-lg);
+/* --- 弹窗 --- */
+.el-dialog {
+  --el-dialog-bg-color: var(--as-page);
+  --el-dialog-border-radius: var(--as-radius-lg);
+  --el-dialog-box-shadow: var(--as-shadow-lg);
+  border: 1px solid var(--as-line);
 }
 
-/* --- Element Plus 默认按钮（plain 变体） --- */
-.el-button--default.is-plain {
-  --el-button-bg-color: transparent;
-  --el-button-border-color: rgba(255, 255, 255, 0.1);
-  --el-button-text-color: #e2e8f0;
-  --el-button-hover-bg-color: rgba(255, 255, 255, 0.08);
-  --el-button-hover-border-color: rgba(103, 232, 249, 0.3);
-  --el-button-hover-text-color: #67e8f9;
-  --el-button-active-bg-color: rgba(103, 232, 249, 0.12);
-  --el-button-active-border-color: rgba(103, 232, 249, 0.5);
-  --el-button-active-text-color: #67e8f9;
-}
-
-/* --- Element Plus 主要按钮主题覆盖（青色） --- */
-.el-button--primary {
-  --el-button-bg-color: #06b6d4;
-  --el-button-border-color: #06b6d4;
-  --el-button-text-color: #ffffff;
-  --el-button-hover-bg-color: #22d3ee;
-  --el-button-hover-border-color: #22d3ee;
-  --el-button-hover-text-color: #ffffff;
-  --el-button-active-bg-color: #0891b2;
-  --el-button-active-border-color: #0891b2;
-  --el-button-active-text-color: #ffffff;
-  border-radius: var(--radius-lg);
-}
-
-.el-button--primary.is-plain {
-  --el-button-bg-color: rgba(6, 182, 212, 0.12);
-  --el-button-border-color: rgba(6, 182, 212, 0.35);
-  --el-button-text-color: #67e8f9;
-  --el-button-hover-bg-color: rgba(6, 182, 212, 0.22);
-  --el-button-hover-border-color: rgba(6, 182, 212, 0.55);
-  --el-button-hover-text-color: #a5f3fc;
-  --el-button-active-bg-color: rgba(6, 182, 212, 0.3);
-  --el-button-active-border-color: rgba(6, 182, 212, 0.7);
-  --el-button-active-text-color: #a5f3fc;
-}
-
-/* --- Danger 按钮 Plain 变体微调 --- */
-.el-button--danger.is-plain {
-  --el-button-bg-color: rgba(248, 113, 113, 0.1);
-  --el-button-border-color: rgba(248, 113, 113, 0.3);
-  --el-button-text-color: #fca5a5;
-  --el-button-hover-bg-color: rgba(248, 113, 113, 0.2);
-  --el-button-hover-border-color: rgba(248, 113, 113, 0.5);
-  --el-button-hover-text-color: #fca5a5;
-  --el-button-active-bg-color: rgba(248, 113, 113, 0.3);
-  --el-button-active-border-color: rgba(248, 113, 113, 0.7);
-}
-
-/* --- Success 按钮 Plain 变体微调 --- */
-.el-button--success.is-plain {
-  --el-button-bg-color: rgba(52, 211, 153, 0.1);
-  --el-button-border-color: rgba(52, 211, 153, 0.3);
-  --el-button-text-color: #6ee7b7;
-  --el-button-hover-bg-color: rgba(52, 211, 153, 0.2);
-  --el-button-hover-border-color: rgba(52, 211, 153, 0.5);
-  --el-button-hover-text-color: #a7f3d0;
-  --el-button-active-bg-color: rgba(52, 211, 153, 0.3);
-  --el-button-active-border-color: rgba(52, 211, 153, 0.7);
-}
-
-/* --- Element Plus 通知组件暗色主题覆盖 --- */
+/* --- 通知 --- */
 .el-notification {
-  --el-notification-bg-color: var(--bg-glass);
-  --el-notification-border-color: var(--border-default);
-  --el-notification-title-color: var(--text-primary);
-  --el-notification-content-color: var(--text-secondary);
-  --el-notification-radius: var(--radius-lg);
-  --el-notification-shadow: var(--shadow-card);
-  border: 1px solid var(--border-default);
-  backdrop-filter: blur(var(--blur-overlay));
+  --el-notification-bg-color: var(--as-page);
+  --el-notification-border-color: var(--as-line);
+  --el-notification-title-color: var(--as-fg);
+  --el-notification-content-color: var(--as-fg-2);
+  --el-notification-radius: var(--as-radius-md);
+  --el-notification-shadow: var(--as-shadow-md);
+  border: 1px solid var(--as-line);
+}
+
+/* --- 消息确认框 --- */
+.el-message-box {
+  --el-messagebox-bg-color: var(--as-page);
+  --el-messagebox-border-radius: var(--as-radius-lg);
+  border: 1px solid var(--as-line);
+}
+
+/* --- 弹出层（popover/下拉） --- */
+.el-popover {
+  --el-popover-bg-color: var(--as-page);
+  --el-popover-border-color: var(--as-line);
+  --el-popover-padding: 12px;
+  --el-popover-border-radius: var(--as-radius-md);
+  --el-popover-box-shadow: var(--as-shadow-md);
+}
+
+.el-dropdown-menu {
+  background: var(--as-page);
+  border: 1px solid var(--as-line);
+  border-radius: var(--as-radius-md);
+  box-shadow: var(--as-shadow-md);
 }
 
 /* ===================================================================
    Layer 4: 全局样式补丁
    =================================================================== */
 
-/* 按钮禁用态：保持原有颜色不变，调低透明度 */
+/* 按钮禁用态：降低透明度，保持语义色 */
 .el-button.is-disabled,
-.el-button.is-disabled:active,
+.el-button.is-disabled:hover,
 .el-button.is-disabled:focus,
-.el-button.is-disabled:hover {
-  opacity: 0.2 !important;
+.el-button.is-disabled:active {
+  opacity: 0.55;
 }
 
-/* 暗色主题滚动条（全局） */
+/* 暗色感知滚动条 */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -264,10 +328,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--as-line-strong);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--as-muted);
 }
