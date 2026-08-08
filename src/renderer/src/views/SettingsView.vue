@@ -5,17 +5,24 @@
     <!-- 头部 -->
     <div class="flex items-center gap-4">
       <el-button :icon="ArrowLeft" text @click="goBack">返回</el-button>
-      <h1 class="text-2xl font-semibold text-white">设置</h1>
+      <h1 class="text-2xl font-semibold text-fg">设置</h1>
     </div>
 
     <!-- 操作者名称 -->
-    <el-card shadow="never" class="rounded-[--radius-card]! border-white/10!">
+    <el-card shadow="never">
       <template #header>
         <div class="flex items-center justify-between">
-          <span class="text-base font-semibold text-white">操作者</span>
-          <el-tag :type="operatorName ? 'success' : 'warning'" effect="dark" size="small">
+          <span class="text-base font-semibold text-fg">操作者</span>
+          <span
+            class="inline-flex h-5 items-center rounded-full border px-2 text-[11px] leading-5"
+            :class="
+              operatorName
+                ? 'border-success-line bg-success-soft text-success'
+                : 'border-warning-line bg-warning-soft text-warning'
+            "
+          >
             {{ operatorName ? "已设置" : "未设置" }}
-          </el-tag>
+          </span>
         </div>
       </template>
 
@@ -26,42 +33,41 @@
             placeholder="请输入操作者名称"
             maxlength="50"
             clearable
-            class="custom-input"
           />
         </el-form-item>
         <el-form-item label="角色">
           <div class="grid w-full gap-3">
             <label
-              class="flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition"
+              class="flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition"
               :class="
                 userRole === 'developer'
-                  ? 'border-cyan-300/50 bg-cyan-950/30'
-                  : 'border-white/10  hover:border-white/20'
+                  ? 'border-accent-line bg-accent-soft'
+                  : 'border-line bg-page hover:border-line-strong'
               "
             >
               <el-radio v-model="userRole" label="developer" size="large" />
               <div>
-                <p class="text-sm font-medium text-white">研发</p>
-                <p class="text-sm text-slate-400 mt-0.5">可上传和下载版本</p>
+                <p class="text-sm font-medium text-fg">研发</p>
+                <p class="mt-0.5 text-sm text-muted">可上传和下载版本</p>
               </div>
             </label>
             <label
-              class="flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition"
+              class="flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition"
               :class="
                 userRole === 'tester'
-                  ? 'border-cyan-300/50 bg-cyan-950/30'
-                  : 'border-white/10  hover:border-white/20'
+                  ? 'border-accent-line bg-accent-soft'
+                  : 'border-line bg-page hover:border-line-strong'
               "
             >
               <el-radio v-model="userRole" label="tester" size="large" />
               <div>
-                <p class="text-sm font-medium text-white">测试</p>
-                <p class="text-sm text-slate-400 mt-0.5">仅可下载版本，不可上传或删除版本</p>
+                <p class="text-sm font-medium text-fg">测试</p>
+                <p class="mt-0.5 text-sm text-muted">仅可下载版本，不可上传或删除版本</p>
               </div>
             </label>
           </div>
         </el-form-item>
-        <p class="mb-4 text-sm leading-6 text-slate-300">
+        <p class="mb-4 text-sm leading-6 text-muted">
           名称会在上传版本时自动记录为操作者。角色决定了可用的操作范围。
         </p>
         <el-button type="primary" :loading="saving" @click="handleSave"> 保存修改 </el-button>
@@ -69,39 +75,44 @@
     </el-card>
 
     <!-- 配置导入导出 -->
-    <el-card shadow="never" class="rounded-[--radius-card]! border-white/10!">
+    <el-card shadow="never">
       <template #header>
-        <span class="text-base font-semibold text-white">配置管理</span>
+        <span class="text-base font-semibold text-fg">配置管理</span>
       </template>
 
       <div class="grid gap-4 md:grid-cols-2">
-        <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-          <p class="text-sm font-medium text-white mb-1">导出配置</p>
-          <p class="text-xs text-slate-400 mb-4">
-            将当前操作者名称和所有项目配置导出为 JSON 文件。
-          </p>
+        <div class="rounded-md border border-line bg-canvas p-5">
+          <p class="mb-1 text-sm font-medium text-fg">导出配置</p>
+          <p class="mb-4 text-xs text-muted">将当前操作者名称和所有项目配置导出为 JSON 文件。</p>
           <el-button :loading="exporting" @click="handleExport"> 导出 </el-button>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-          <p class="text-sm font-medium text-white mb-1">导入配置</p>
-          <p class="text-xs text-slate-400 mb-4">从 JSON 文件导入配置。将替换当前项目列表。</p>
+        <div class="rounded-md border border-line bg-canvas p-5">
+          <p class="mb-1 text-sm font-medium text-fg">导入配置</p>
+          <p class="mb-4 text-xs text-muted">从 JSON 文件导入配置。将替换当前项目列表。</p>
           <el-button :loading="importing" @click="handleImport"> 导入 </el-button>
         </div>
       </div>
     </el-card>
 
     <!-- 危险操作 -->
-    <el-card shadow="never" class="rounded-[--radius-card]! border-red-900/30! bg-red-950/15!">
+    <el-card
+      shadow="never"
+      style="border-color: var(--as-danger-line); background: var(--as-danger-soft)"
+    >
       <template #header>
         <div class="flex items-center justify-between">
-          <span class="text-base font-semibold text-white">危险操作</span>
-          <el-tag type="danger" effect="dark" size="small">谨慎</el-tag>
+          <span class="text-base font-semibold text-fg">危险操作</span>
+          <span
+            class="inline-flex h-5 items-center rounded-full border border-danger-line bg-danger-soft px-2 text-[11px] leading-5 text-danger"
+          >
+            谨慎
+          </span>
         </div>
       </template>
 
-      <div class="rounded-xl border border-red-900/30 bg-red-950/15 p-5">
-        <p class="text-sm font-medium text-red-300 mb-1">重置所有数据</p>
-        <p class="text-xs text-slate-400 mb-4">
+      <div class="rounded-md border border-danger-line bg-danger-soft p-5">
+        <p class="mb-1 text-sm font-medium text-danger">重置所有数据</p>
+        <p class="mb-4 text-xs text-muted">
           清除操作者名称、所有项目配置和本地缓存状态，应用恢复到首次启动状态。此操作不可撤销。
         </p>
         <el-button type="danger" :loading="resetting" @click="handleReset">
@@ -111,23 +122,23 @@
     </el-card>
 
     <!-- 关于 -->
-    <el-card shadow="never" class="rounded-[--radius-card]! border-white/10!">
+    <el-card shadow="never">
       <template #header>
-        <span class="text-base font-semibold text-white">关于</span>
+        <span class="text-base font-semibold text-fg">关于</span>
       </template>
 
       <div class="grid gap-4 md:grid-cols-3">
-        <div class="rounded-xl border border-white/10 p-4">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">应用名称</p>
-          <p class="mt-2 text-sm font-medium text-white">{{ appName }}</p>
+        <div class="rounded-md border border-line p-4">
+          <p class="text-xs text-muted">应用名称</p>
+          <p class="mt-2 text-sm font-medium text-fg">{{ appName }}</p>
         </div>
-        <div class="rounded-xl border border-white/10 p-4">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">当前版本</p>
-          <p class="mt-2 text-sm font-medium text-white">{{ appVersion }}</p>
+        <div class="rounded-md border border-line p-4">
+          <p class="text-xs text-muted">当前版本</p>
+          <p class="mt-2 text-sm font-medium text-fg">{{ appVersion }}</p>
         </div>
-        <div class="rounded-xl border border-white/10 p-4">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">技术栈</p>
-          <p class="mt-2 text-sm text-slate-200">Electron + Vue 3 + TypeScript</p>
+        <div class="rounded-md border border-line p-4">
+          <p class="text-xs text-muted">技术栈</p>
+          <p class="mt-2 text-sm text-fg-2">Electron + Vue 3 + TypeScript</p>
         </div>
       </div>
     </el-card>

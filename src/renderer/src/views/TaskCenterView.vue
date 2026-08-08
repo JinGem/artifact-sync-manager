@@ -5,39 +5,31 @@
     <!-- 头部 -->
     <div class="flex items-center gap-4">
       <el-button :icon="ArrowLeft" text @click="goBack">返回</el-button>
-      <h1 class="text-2xl font-semibold text-white">任务中心</h1>
-      <el-tag v-if="store.failedCount > 0" type="danger" effect="dark">
+      <h1 class="text-2xl font-semibold text-fg">任务中心</h1>
+      <span
+        v-if="store.failedCount > 0"
+        class="inline-flex h-5 items-center rounded-full border border-danger-line bg-danger-soft px-2 text-[11px] leading-5 text-danger"
+      >
         {{ store.failedCount }} 个失败
-      </el-tag>
-      <el-tag v-if="store.runningCount > 0" type="warning" effect="dark">
+      </span>
+      <span
+        v-if="store.runningCount > 0"
+        class="inline-flex h-5 items-center rounded-full border border-warning-line bg-warning-soft px-2 text-[11px] leading-5 text-warning"
+      >
         {{ store.runningCount }} 个进行中
-      </el-tag>
+      </span>
     </div>
 
     <!-- 批量操作 -->
     <div v-if="store.tasks.length > 0" class="flex gap-3">
-      <el-button
-        size="small"
-        plain
-        class="!border-white/10 !text-slate-300 hover:!bg-white/5"
-        @click="store.clearCompleted"
-      >
-        清除已完成
-      </el-button>
-      <el-button
-        size="small"
-        plain
-        class="!border-white/10 !text-slate-300 hover:!bg-white/5"
-        @click="store.clearAll"
-      >
-        清除全部
-      </el-button>
+      <el-button size="small" plain @click="store.clearCompleted">清除已完成</el-button>
+      <el-button size="small" plain @click="store.clearAll">清除全部</el-button>
     </div>
 
     <!-- 空状态 -->
     <div
       v-if="store.tasks.length === 0"
-      class="rounded-2xl border border-dashed border-white/15 bg-white/5 px-6 py-16 text-center text-slate-300"
+      class="rounded-lg border border-dashed border-line bg-canvas px-6 py-16 text-center text-fg-2"
     >
       暂无任务记录。执行上传或下载操作后，任务记录将在此展示。
     </div>
@@ -47,14 +39,14 @@
       <div
         v-for="task in store.tasks"
         :key="task.id"
-        class="rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-cyan-300/30"
+        class="rounded-lg border border-line bg-page p-5 transition hover:border-accent-line hover:shadow-sm"
       >
         <div class="flex items-start justify-between gap-4">
           <!-- 左侧：图标 + 信息 -->
-          <div class="flex items-start gap-4 min-w-0 flex-1">
+          <div class="flex min-w-0 flex-1 items-start gap-4">
             <!-- 状态图标 -->
             <div
-              class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+              class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
               :class="statusIconBg(task.status)"
             >
               <el-icon :size="18" :color="statusIconColor(task.status)">
@@ -69,9 +61,9 @@
             <!-- 信息 -->
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="text-sm font-medium text-white capitalize">{{
-                  task.type === "upload" ? "上传" : "下载"
-                }}</span>
+                <span class="text-sm font-medium text-fg">
+                  {{ task.type === "upload" ? "上传" : "下载" }}
+                </span>
                 <el-tag size="small" :type="statusTag(task.status)" effect="dark">
                   {{ statusLabel(task.status) }}
                 </el-tag>
@@ -79,16 +71,16 @@
 
               <div class="mt-2 grid gap-1.5 text-sm">
                 <div class="flex gap-2">
-                  <span class="text-slate-400 shrink-0 w-16">项目</span>
-                  <span class="text-slate-200 truncate">{{ task.projectName }}</span>
+                  <span class="w-16 shrink-0 text-muted">项目</span>
+                  <span class="truncate text-fg-2">{{ task.projectName }}</span>
                 </div>
                 <div class="flex gap-2">
-                  <span class="text-slate-400 shrink-0 w-16">版本</span>
-                  <span class="text-slate-200 font-mono">{{ task.version }}</span>
+                  <span class="w-16 shrink-0 text-muted">版本</span>
+                  <span class="font-mono text-fg-2">{{ task.version }}</span>
                 </div>
                 <div class="flex gap-2">
-                  <span class="text-slate-400 shrink-0 w-16">时间</span>
-                  <span class="text-slate-200">{{ formatTime(task.startedAt) }}</span>
+                  <span class="w-16 shrink-0 text-muted">时间</span>
+                  <span class="text-fg-2">{{ formatTime(task.startedAt) }}</span>
                 </div>
 
                 <!-- 进度 -->
@@ -98,7 +90,7 @@
                     :stroke-width="6"
                     class="max-w-xs"
                   />
-                  <p v-if="task.currentFile" class="mt-1 text-xs text-slate-500 truncate">
+                  <p v-if="task.currentFile" class="mt-1 truncate text-xs text-muted">
                     {{ task.currentFile }}
                   </p>
                 </div>
@@ -106,12 +98,12 @@
                 <!-- 错误详情 -->
                 <div v-if="task.status === 'failed' && task.errorMessage" class="mt-2">
                   <div
-                    class="flex items-start gap-2 rounded-xl bg-red-950/20 border border-red-400/20 px-3 py-2"
+                    class="flex items-start gap-2 rounded-md border border-danger-line bg-danger-soft px-3 py-2"
                   >
-                    <el-icon :size="14" color="#f87171"><WarningFilled /></el-icon>
+                    <el-icon :size="14" color="var(--as-danger)"><WarningFilled /></el-icon>
                     <div>
-                      <p class="text-sm text-red-300">
-                        <span v-if="task.errorCode" class="font-mono text-xs opacity-70 mr-2"
+                      <p class="text-sm text-danger">
+                        <span v-if="task.errorCode" class="mr-2 font-mono text-xs opacity-70"
                           >[{{ task.errorCode }}]</span
                         >
                         {{ task.errorMessage }}
@@ -121,7 +113,7 @@
                 </div>
 
                 <!-- 取消提示 -->
-                <p v-if="task.status === 'cancelled'" class="mt-1 text-xs text-amber-400">
+                <p v-if="task.status === 'cancelled'" class="mt-1 text-xs text-warning">
                   本地文件可能已被部分修改，请注意检查。
                 </p>
               </div>
@@ -178,26 +170,26 @@ const formatTime = (iso: string): string => {
 const statusIconBg = (status: string): string => {
   switch (status) {
     case "completed":
-      return "bg-emerald-900/40";
+      return "bg-success-soft";
     case "failed":
-      return "bg-red-900/40";
+      return "bg-danger-soft";
     case "cancelled":
-      return "bg-amber-900/40";
+      return "bg-warning-soft";
     default:
-      return "bg-cyan-900/40";
+      return "bg-accent-soft";
   }
 };
 
 const statusIconColor = (status: string): string => {
   switch (status) {
     case "completed":
-      return "#34d399";
+      return "var(--as-success)";
     case "failed":
-      return "#f87171";
+      return "var(--as-danger)";
     case "cancelled":
-      return "#fbbf24";
+      return "var(--as-warning)";
     default:
-      return "#67e8f9";
+      return "var(--as-accent)";
   }
 };
 
