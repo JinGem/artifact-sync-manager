@@ -51,7 +51,7 @@ function createTrayIcon(): Electron.NativeImage {
 
 export function createTray(window: BrowserWindow): Tray {
   const tray = new Tray(createTrayIcon());
-  tray.setToolTip("Artifact Sync Manager");
+  tray.setToolTip("版本同步助手");
 
   tray.on("click", () => {
     if (window.isMinimized()) window.restore();

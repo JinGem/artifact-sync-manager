@@ -13,7 +13,7 @@
 
 ## Application Overview
 
-Artifact Sync Manager 是一个 Electron + Vue 3 桌面应用，用于将构建产物上传/下载到网络共享目录。**无后端服务、无数据库**，所有状态通过本地 JSON 文件持久化。
+版本同步助手 是一个 Electron + Vue 3 桌面应用，用于将构建产物上传/下载到网络共享目录。**无后端服务、无数据库**，所有状态通过本地 JSON 文件持久化。
 
 目标用户：公司内网开发者。支持环境：Windows 10/11。远程存储通过直接路径（如 `\\192.168.1.88\home\projects`）或本地磁盘路径访问。
 
@@ -28,7 +28,7 @@ src/
 
 ### 主进程 `src/main/`
 
-处理所有文件系统操作、任务执行（上传/下载）和状态持久化。IPC 处理器在 `src/main/index.ts` 中注册，通过 `ipc/` 下的独立模块组织。`config/store.ts` 管理单个 `app-state.json` 文件（操作者名称 + 项目列表）。上传/下载任务执行在 `main/ipc/upload.ts` 和 `main/ipc/download.ts` 中。
+处理所有文件系统操作、任务执行（上传/下载）和状态持久化。IPC 处理器在 `src/main/index.ts` 中注册，通过 `ipc/` 下的独立模块组织。`config/store.ts` 管理单个 `app-state.json` 文件（操作者名称 + 项目列表）。上传/下载任务执行在 `main/ipc/upload.ts` 和 `main/ipc/download.ts` 中。`main/ipc/window.ts` 提供无边框窗口控制（最小化、最大化切换、关闭、最大化状态查询与推送）。
 
 **新增模块：**
 - `src/main/watch/directory-watcher.ts` — `WatcherService` 单例，30s 轮询 + `fs.watch` 监控远程目录版本变化
@@ -50,7 +50,7 @@ src/
 
 ```
 ┌─ flex h-full flex-col ──────────────────┐
-│ Header (h-11 shrink-0, nav + tools)     │
+│ WindowHeader (h-14, 品牌可点击 + 导航 + 窗口控制贴右缘) │
 ├──────────────────────────────────────────┤
 │ flex-1 overflow-y-auto (scrolling body)  │
 │ ┌─ RouterView ────────────────────────┐  │
@@ -61,6 +61,8 @@ src/
 ```
 
 滚动容器：`html { overflow: hidden }` → `#app { overflow: hidden }` → 内容区 `flex-1 overflow-y-auto`。滚动条仅出现在 Header 下方。Router 包含 `scrollBehavior({ top: 0 })` 在路由切换时重置滚动位置。
+
+窗口为无边框模式（`frame: false`），`WindowHeader.vue` 承担原生标题栏职责：整个 Header 为拖拽区（`-webkit-app-region: drag`），交互元素标记 `no-drag`；右侧窗口控制按钮通过 `window:minimize` / `window:toggle-maximize` / `window:close` IPC 调用主进程，最大化状态由 `window:maximized-changed` 事件实时同步。关闭按钮沿用"隐藏到托盘"行为。Header 为左中右三栏：左侧品牌（logo + 名称，可点击返回首页）、中间路由导航（任务中心/设置）、右侧清除通知 + 窗口控制（贴右缘，Windows 惯例）；角色标识显示在首页 Hero 区域。
 
 ## 路由页面
 

@@ -1,5 +1,5 @@
 /**
- * Generate Doraemon-inspired tray icon for Artifact Sync Manager.
+ * Generate Doraemon-inspired tray icon for 版本同步助手.
  * Outputs: tray-icon.png (32x32)
  * app-icon.png is user-provided and not auto-generated.
  * Uses only Node.js built-ins (fs + zlib).
