@@ -96,12 +96,12 @@ UI Component → window.artifactSync.someMethod()
 
 ## 主题系统
 
-暗色主题通过 4 层 CSS + 构建时 SCSS 实现（均在 `src/renderer/src/styles/` 下）：
+GitHub 风格主题（浅色为主，跟随系统自动切换暗色），哆啦A梦蓝 `#0099FF` 做主色、红鼻 `#FF3B30` 做危险、铃铛黄 `#FFC20E` 做警告，语义绿保留用于成功状态。通过 4 层 CSS + 构建时 SCSS 实现（均在 `src/renderer/src/styles/` 下）：
 
 1. **Layer 0**（`main.css`）— 滚动容器锁定（html/body/#app: `overflow: hidden`）
-2. **Layer 1**（`main.css`）— 重置、字体、`color-scheme: dark`
-3. **Layer 2**（`main.css` `:root`）— 自定义 CSS 变量（`--bg-*`、`--text-*`、`--border-*`、`--radius-*`、`--shadow-*`）+ Element Plus 全局 CSS 变量暗色覆盖（`--el-fill-color-*`、`--el-border-*`、`--el-text-*`、`--el-bg-color-*`）
-4. **Layer 3**（`main.css`）— Element Plus 组件 CSS 变量覆盖（button、dialog、input、notification；零 `!important`；毛玻璃效果通过 `backdrop-filter`）
+2. **Layer 1**（`main.css`）— 重置、字体、`color-scheme: light dark`（跟随系统）
+3. **Layer 2**（`main.css` `:root`）— 设计令牌（`--as-page`/`--as-canvas`/`--as-line`/`--as-fg`/`--as-accent` 等，全部通过 `light-dark()` 同时定义浅色与暗色值）+ Tailwind `@theme` 映射（`bg-page`、`text-fg`、`border-line`、`bg-accent-soft` 等语义工具类）+ Element Plus 全局 CSS 变量覆盖（`--el-fill-color-*`、`--el-border-*`、`--el-text-*`、`--el-bg-color-*`、语义色 `--el-color-*`）
+4. **Layer 3**（`main.css`）— Element Plus 组件 CSS 变量覆盖（button、dialog、input、notification、message-box、popover；零 `!important`）
 5. **构建时 SCSS**（`styles/element/index.scss`）— `@forward 'element-plus/theme-chalk/src/common/var.scss' with ($colors: ...)` 在编译时注入 primary/success/danger/warning 颜色
 
 ### 关键原则
@@ -109,6 +109,8 @@ UI Component → window.artifactSync.someMethod()
 - 优先使用 Element Plus 内置 CSS 变量接口（`--el-*`），而非直接覆盖底层 CSS 属性
 - `main.css` 在 Element Plus SCSS 之后加载，同选择器自然覆盖，无需 `!important`
 - Element Plus 底层链式引用（如 `--el-button-bg-color: var(--el-fill-color-blank)`）需在 `:root` 层覆盖 `--el-fill-color-blank` 等全局变量
+- 渲染层统一使用 Tailwind 语义工具类（`bg-page`/`text-fg`/`border-line`/`text-accent` 等），不在组件里写死颜色值；路径、版本号使用 `font-mono` 等宽字体
+- 覆盖 Element Plus 组件时注意：Tailwind 工具类位于 `@layer utilities`，会被 Element Plus 未分层样式压过，需要提权时使用尾缀 `!`（如 `text-danger!`）
 
 ## 远程目录监控
 

@@ -30,7 +30,7 @@ src/
 
 **应用图标**：窗口标题栏/任务栏/托盘统一哆啦A梦风格图标。
 
-**主题**：暗色主题，通过 4 层 CSS（`main.css`）+ 构建时 SCSS 变量覆盖实现，零 `!important`。
+**主题**：GitHub 风格（浅色为主、跟随系统暗色），哆啦A梦蓝/红/黄做点缀；通过 `light-dark()` 设计令牌 + Tailwind `@theme` 映射 + 构建时 SCSS 变量覆盖实现，零 `!important`。
 
 ## 产品边界
 
