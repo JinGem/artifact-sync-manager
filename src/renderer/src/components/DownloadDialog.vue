@@ -12,12 +12,9 @@
           <el-icon :size="18" color="var(--as-accent)"><Download /></el-icon>
         </div>
         <span class="text-lg font-semibold text-fg">下载版本</span>
-        <span
-          v-if="!showingConfirm"
-          class="inline-flex h-5 items-center rounded-full border border-line-soft bg-canvas px-2 text-[11px] leading-5 text-muted"
-        >
+        <el-tag v-if="!showingConfirm" size="small" type="info" effect="plain">
           {{ versionName }}
-        </span>
+        </el-tag>
       </div>
     </template>
 
@@ -32,9 +29,9 @@
           <div>
             <p class="text-sm font-medium text-fg">主版本更新确认</p>
             <p class="mt-1 text-xs text-warning">
-              此版本为主版本更新（<span
-                class="inline-flex h-5 items-center rounded-full border border-warning-line bg-warning-soft px-1.5 text-[11px] leading-5 text-warning"
-                >{{ versionName }}</span
+              此版本为主版本更新（<el-tag size="small" type="warning" effect="plain">{{
+                versionName
+              }}</el-tag
               >）， 下载后可能需要手动执行额外操作。
             </p>
           </div>
@@ -57,7 +54,7 @@
         <div v-else class="flex flex-col items-center gap-3 py-4">
           <p class="text-sm text-warning">版本说明数据为空</p>
           <p class="text-center text-xs text-muted">可能因网络或远程目录异常导致，可尝试重新扫描</p>
-          <el-button size="small" class="mt-1" @click="reloadDescription" :loading="loadingDesc">
+          <el-button class="mt-1" @click="reloadDescription" :loading="loadingDesc">
             <el-icon :size="14" class="mr-1"><Refresh /></el-icon>
             重新扫描版本信息
           </el-button>
@@ -128,15 +125,15 @@
           <p class="text-sm font-medium text-fg">文件预览</p>
           <div class="flex items-center gap-2">
             <template v-if="!scanning && scannedFiles.length > 0">
-              <el-button size="small" text @click="expandAll">
+              <el-button text @click="expandAll">
                 <el-icon :size="14" class="mr-1"><Fold /></el-icon>
                 展开全部
               </el-button>
-              <el-button size="small" text @click="collapseAll">
+              <el-button text @click="collapseAll">
                 <el-icon :size="14" class="mr-1"><Fold /></el-icon>
                 收起全部
               </el-button>
-              <el-button size="small" text @click="scanRemote">重新扫描</el-button>
+              <el-button text @click="scanRemote">重新扫描</el-button>
             </template>
             <span v-if="scannedFiles.length > 0" class="text-sm text-muted">
               {{ scannedFiles.length }} 个文件 · {{ formatSize(totalSize) }}
@@ -382,6 +379,7 @@ const warnMessage = ref("");
 const progressPhase = ref<string>("");
 
 const progressPercent = computed(() => {
+  if (progressPhase.value === "completed") return 100;
   if (progressTotal.value === 0) return 0;
   return Math.round((progressCurrent.value / progressTotal.value) * 100);
 });
@@ -563,6 +561,9 @@ const handleStartDownload = async (): Promise<void> => {
       mode: mode.value,
     });
 
+    // 完成态由渲染层显式收敛，避免最后一个进度事件时序导致进度不满 100%
+    progressPhase.value = "completed";
+    progressCurrent.value = progressTotal.value;
     taskStore.updateTask(taskId, {
       status: "completed",
       completedAt: new Date().toISOString(),

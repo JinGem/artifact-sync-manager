@@ -87,12 +87,7 @@
         <div class="mb-2 flex items-center justify-between">
           <p class="text-sm font-medium text-fg">文件预览</p>
           <div class="flex items-center gap-3">
-            <el-button
-              v-if="!scanning && scannedFiles.length > 0"
-              size="small"
-              text
-              @click="scanLocalFiles"
-            >
+            <el-button v-if="!scanning && scannedFiles.length > 0" text @click="scanLocalFiles">
               重新扫描
             </el-button>
             <span v-if="scannedFiles.length > 0" class="text-sm text-muted">
@@ -105,63 +100,65 @@
           <el-icon :size="20" class="mr-2"><Loading /></el-icon>
           <span class="text-sm">正在扫描文件...</span>
         </div>
-        <div v-else-if="scannedFiles.length > 0" class="file-tree-wrapper max-h-56 overflow-y-auto">
-          <el-tree
-            :data="fileTree"
-            :props="{ children: 'children', label: 'label' }"
-            nodeKey="id"
-            :defaultExpandAll="true"
-            :indent="16"
-            :expandOnClickNode="true"
-            class="file-tree"
-          >
-            <template #default="{ node, data }">
-              <span class="inline-flex w-full items-center gap-2 text-sm">
-                <el-icon
-                  :size="16"
-                  class="shrink-0"
-                  :color="data.isFile ? 'var(--as-subtle)' : 'var(--as-accent)'"
-                >
-                  <Document v-if="data.isFile" />
-                  <FolderOpened v-else-if="node.expanded" />
-                  <Folder v-else />
-                </el-icon>
-                <span class="truncate text-fg-2">{{ data.label }}</span>
-                <span v-if="data.isFile" class="ml-auto shrink-0 text-xs text-muted">{{
-                  formatSize(data.size)
-                }}</span>
-                <span v-else class="ml-auto shrink-0 text-xs text-muted"
-                  >{{ data.children.length }} 项 · {{ formatSize(data.size) }}</span
-                >
-              </span>
-            </template>
-          </el-tree>
-        </div>
-
-        <!-- 已忽略文件 -->
-        <div v-if="ignoredFiles.length > 0" class="mt-2">
-          <button
-            class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-muted transition-colors hover:bg-canvas-2"
-            @click="showIgnored = !showIgnored"
-          >
-            <el-icon :size="14" :class="{ 'rotate-90': showIgnored }" class="transition-transform"
-              ><ArrowRight
-            /></el-icon>
-            已忽略 {{ ignoredFiles.length }} 个文件/目录
-          </button>
-          <div v-show="showIgnored" class="mt-1 max-h-28 space-y-0.5 overflow-y-auto pl-6">
-            <div
-              v-for="file in ignoredFiles"
-              :key="file.relativePath"
-              class="flex items-center justify-between rounded px-2.5 py-1 text-xs"
+        <template v-else-if="scannedFiles.length > 0">
+          <div class="file-tree-wrapper max-h-56 overflow-y-auto">
+            <el-tree
+              :data="fileTree"
+              :props="{ children: 'children', label: 'label' }"
+              nodeKey="id"
+              :defaultExpandAll="true"
+              :indent="16"
+              :expandOnClickNode="true"
+              class="file-tree"
             >
-              <span class="truncate text-muted">{{ file.relativePath }}</span>
-              <span class="ml-2 shrink-0 text-subtle">{{
-                file.size > 0 ? formatSize(file.size) : "—"
-              }}</span>
+              <template #default="{ node, data }">
+                <span class="inline-flex w-full items-center gap-2 text-sm">
+                  <el-icon
+                    :size="16"
+                    class="shrink-0"
+                    :color="data.isFile ? 'var(--as-subtle)' : 'var(--as-accent)'"
+                  >
+                    <Document v-if="data.isFile" />
+                    <FolderOpened v-else-if="node.expanded" />
+                    <Folder v-else />
+                  </el-icon>
+                  <span class="truncate text-fg-2">{{ data.label }}</span>
+                  <span v-if="data.isFile" class="ml-auto shrink-0 text-xs text-muted">{{
+                    formatSize(data.size)
+                  }}</span>
+                  <span v-else class="ml-auto shrink-0 text-xs text-muted"
+                    >{{ data.children.length }} 项 · {{ formatSize(data.size) }}</span
+                  >
+                </span>
+              </template>
+            </el-tree>
+          </div>
+
+          <!-- 已忽略文件 -->
+          <div v-if="ignoredFiles.length > 0" class="mt-2">
+            <button
+              class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-muted transition-colors hover:bg-canvas-2"
+              @click="showIgnored = !showIgnored"
+            >
+              <el-icon :size="14" :class="{ 'rotate-90': showIgnored }" class="transition-transform"
+                ><ArrowRight
+              /></el-icon>
+              已忽略 {{ ignoredFiles.length }} 个文件/目录
+            </button>
+            <div v-show="showIgnored" class="mt-1 max-h-28 space-y-0.5 overflow-y-auto pl-6">
+              <div
+                v-for="file in ignoredFiles"
+                :key="file.relativePath"
+                class="flex items-center justify-between rounded px-2.5 py-1 text-xs"
+              >
+                <span class="truncate text-muted">{{ file.relativePath }}</span>
+                <span class="ml-2 shrink-0 text-subtle">{{
+                  file.size > 0 ? formatSize(file.size) : "—"
+                }}</span>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
         <div
           v-else-if="scanError"
           class="flex items-center justify-center py-4 text-sm text-danger"
@@ -329,6 +326,7 @@ const buildFileTree = (files: ScannedFile[]): FileTreeNode[] => {
 const fileTree = computed(() => buildFileTree(scannedFiles.value));
 
 const progressPercent = computed(() => {
+  if (progressPhase.value === "completed") return 100;
   if (progressTotal.value === 0) return 0;
   return Math.round((progressCurrent.value / progressTotal.value) * 100);
 });
@@ -535,6 +533,9 @@ const handleStartUpload = async (): Promise<void> => {
       projectName: props.projectName,
     });
 
+    // 完成态由渲染层显式收敛，避免最后一个进度事件时序导致进度不满 100%
+    progressPhase.value = "completed";
+    progressCurrent.value = progressTotal.value;
     clearDraft();
     taskStore.updateTask(taskId, {
       status: "completed",
