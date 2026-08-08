@@ -15,3 +15,8 @@ release/
 .codebuddy/
 .workbuddy/
 .history/
+
+# 项目级个人技能
+.codex/
+# 已废弃的原型页面
+ai_studio_code.html
