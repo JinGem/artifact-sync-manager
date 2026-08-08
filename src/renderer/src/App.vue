@@ -1,44 +1,8 @@
 <template>
   <el-config-provider namespace="el">
     <div class="flex h-full flex-col bg-page">
-      <!-- Header -->
-      <header class="h-11 shrink-0 border-b border-line bg-page">
-        <div class="mx-auto flex h-11 max-w-7xl items-center justify-between px-6 lg:px-10">
-          <div class="flex items-center gap-2.5">
-            <span
-              v-if="headerRole"
-              class="inline-flex h-5 items-center rounded-full border border-accent-line bg-accent-soft px-2 text-[11px] leading-5 text-accent"
-            >
-              {{ headerRole === "developer" ? "研发" : "测试" }}
-            </span>
-          </div>
-
-          <nav class="flex items-center gap-1.5">
-            <el-button
-              size="small"
-              :plain="route.name !== 'tasks'"
-              :type="route.name === 'tasks' ? 'primary' : 'default'"
-              @click="goTo('tasks')"
-            >
-              任务中心
-            </el-button>
-            <el-button
-              size="small"
-              :plain="route.name !== 'settings'"
-              :type="route.name === 'settings' ? 'primary' : 'default'"
-              @click="goTo('settings')"
-            >
-              设置
-            </el-button>
-            <el-divider direction="vertical" class="mx-1" />
-            <el-tooltip content="清除所有通知" placement="bottom">
-              <el-button size="small" plain @click="clearNotifications">
-                <el-icon><Bell /></el-icon>
-              </el-button>
-            </el-tooltip>
-          </nav>
-        </div>
-      </header>
+      <!-- 自定义窗口 Header（含窗口控制） -->
+      <WindowHeader />
 
       <!-- Router content -->
       <div class="flex-1 overflow-y-auto">
@@ -62,7 +26,7 @@
           >
             <el-icon :size="28"><User /></el-icon>
           </div>
-          <h2 class="text-lg font-semibold text-fg">欢迎使用 Artifact Sync Manager</h2>
+          <h2 class="text-lg font-semibold text-fg">欢迎使用 版本同步助手</h2>
           <p class="mt-2 text-sm text-muted">
             首次使用请先设置您的名称。此名称会在上传版本时自动记录为操作者。
           </p>
@@ -116,7 +80,6 @@
         <div class="flex justify-center">
           <el-button
             type="primary"
-            size="large"
             :loading="saving"
             :disabled="!setupName.trim()"
             @click="handleSaveSetup"
@@ -131,39 +94,27 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import { RouterView } from "vue-router";
 import { ElMessage, ElNotification } from "element-plus";
-import { Bell, User } from "@element-plus/icons-vue";
+import { User } from "@element-plus/icons-vue";
+import WindowHeader from "@renderer/components/WindowHeader.vue";
 
 const api = window.artifactSync;
-const route = useRoute();
-const router = useRouter();
 
 const showSetup = ref(false);
 const setupName = ref("");
 const setupRole = ref<"developer" | "tester">("developer");
-const headerRole = ref<"developer" | "tester" | null>(null);
 const saving = ref(false);
-
-const goTo = (name: string): void => {
-  router.push({ name });
-};
-
-const clearNotifications = (): void => {
-  ElNotification.closeAll();
-};
 
 const handleSaveSetup = async (): Promise<void> => {
   const trimmed = setupName.value.trim();
   if (!trimmed) return;
   saving.value = true;
   try {
-    const nextState = await api.saveUserProfile({
+    await api.saveUserProfile({
       operatorName: trimmed,
       role: setupRole.value,
     });
-    headerRole.value = nextState.settings.role;
     showSetup.value = false;
     ElMessage.success(`欢迎，${trimmed}！`);
   } catch (error) {
@@ -176,7 +127,6 @@ const handleSaveSetup = async (): Promise<void> => {
 onMounted(async () => {
   try {
     const state = await api.getState();
-    headerRole.value = state.settings.role;
     if (!state.settings.operatorName) showSetup.value = true;
   } catch {
     showSetup.value = true;

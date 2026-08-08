@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from "electron";
 declare const __APP_VERSION__: string;
 
 contextBridge.exposeInMainWorld("artifactSync", {
-  appName: "Artifact Sync Manager",
+  appName: "版本同步助手",
   version: __APP_VERSION__,
   getState: () => ipcRenderer.invoke("config:get-state"),
   saveOperatorName: (operatorName: string) =>
@@ -47,6 +47,17 @@ contextBridge.exposeInMainWorld("artifactSync", {
   importConfig: () => ipcRenderer.invoke("settings:import-config"),
   resetState: () => ipcRenderer.invoke("settings:reset-state"),
   openInExplorer: (targetPath: string) => ipcRenderer.invoke("shell:open-in-explorer", targetPath),
+  minimizeWindow: () => ipcRenderer.invoke("window:minimize"),
+  toggleMaximizeWindow: () => ipcRenderer.invoke("window:toggle-maximize"),
+  closeWindow: () => ipcRenderer.invoke("window:close"),
+  isWindowMaximized: () => ipcRenderer.invoke("window:is-maximized"),
+  onWindowMaximizedChange: (callback: (maximized: boolean) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, maximized: boolean) => callback(maximized);
+    ipcRenderer.on("window:maximized-changed", handler);
+    return () => {
+      ipcRenderer.removeListener("window:maximized-changed", handler);
+    };
+  },
   onRemoteChange: (callback: (events: unknown) => void) => {
     const handler = (_event: Electron.IpcRendererEvent, events: unknown) => callback(events);
     ipcRenderer.on("watch:remote-change", handler);

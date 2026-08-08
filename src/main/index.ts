@@ -8,6 +8,7 @@ import { registerUploadIpc } from "@main/ipc/upload";
 import { registerDownloadIpc } from "@main/ipc/download";
 import { registerSettingsIpc } from "@main/ipc/settings";
 import { registerShellIpc } from "@main/ipc/shell";
+import { registerWindowIpc } from "@main/ipc/window";
 import { watcherService } from "@main/watch/directory-watcher";
 import { appStateStore } from "@main/config/store";
 import { createTray } from "@main/tray";
@@ -48,7 +49,9 @@ if (!gotLock) {
       height: 920,
       minWidth: 1180,
       minHeight: 760,
-      title: "Artifact Sync Manager",
+      title: "版本同步助手",
+      frame: false,
+      backgroundColor: "#ffffff",
       icon: iconPath,
       show: false,
       autoHideMenuBar: true,
@@ -77,6 +80,7 @@ if (!gotLock) {
     registerDownloadIpc(window);
     registerSettingsIpc(window);
     registerShellIpc();
+    registerWindowIpc(window);
 
     if (process.env.ELECTRON_RENDERER_URL) {
       window.webContents.openDevTools();

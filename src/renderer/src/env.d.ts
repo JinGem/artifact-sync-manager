@@ -47,6 +47,11 @@ declare global {
       cancelDownload: () => Promise<void>;
       onDownloadProgress: (callback: (progress: DownloadProgress) => void) => () => void;
       openInExplorer: (targetPath: string) => Promise<void>;
+      minimizeWindow: () => Promise<void>;
+      toggleMaximizeWindow: () => Promise<void>;
+      closeWindow: () => Promise<void>;
+      isWindowMaximized: () => Promise<boolean>;
+      onWindowMaximizedChange: (callback: (maximized: boolean) => void) => () => void;
       exportConfig: () => Promise<string | null>;
       importConfig: () => Promise<{
         created: number;
