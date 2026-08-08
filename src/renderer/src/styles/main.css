@@ -52,6 +52,7 @@ body {
   /* --- 哆啦A梦蓝（主色/链接/选中） --- */
   --as-accent: light-dark(#0099ff, #4aa3ff);
   --as-accent-hover: light-dark(#007ee0, #63b3ff);
+  --as-accent-press: light-dark(#0060b3, #3d8fe0);
   --as-accent-soft: light-dark(rgba(0, 153, 255, 0.1), rgba(74, 163, 255, 0.16));
   --as-accent-line: light-dark(rgba(0, 153, 255, 0.32), rgba(74, 163, 255, 0.38));
 
@@ -159,6 +160,14 @@ body {
   --el-color-warning-light-9: light-dark(#fbf1d8, #f5ead0);
   --el-color-warning-dark-2: light-dark(#7b5200, #a87a1c);
 
+  --el-color-info: var(--as-muted);
+  --el-color-info-light-3: light-dark(#7d8794, #a8b0ba);
+  --el-color-info-light-5: light-dark(#939ca8, #b8bfc7);
+  --el-color-info-light-7: light-dark(#aab2bd, #c9ced4);
+  --el-color-info-light-8: light-dark(#b7bec8, #d1d5da);
+  --el-color-info-light-9: light-dark(#eceef1, #e2e5e9);
+  --el-color-info-dark-2: light-dark(#47505c, #767e88);
+
   /* --- Fill（按钮/输入框背景） --- */
   --el-fill-color-blank: var(--as-page);
   --el-fill-color: var(--as-canvas);
@@ -201,7 +210,7 @@ body {
   border-radius: var(--as-radius-sm);
 }
 
-/* --- 默认按钮 --- */
+/* --- 默认按钮（hover 浅底 + 边框加深，active 再深一档） --- */
 .el-button--default {
   --el-button-bg-color: var(--as-page);
   --el-button-border-color: var(--as-line);
@@ -212,9 +221,10 @@ body {
   --el-button-active-bg-color: var(--as-canvas-2);
   --el-button-active-border-color: var(--as-line-strong);
   --el-button-active-text-color: var(--as-fg);
+  box-shadow: var(--as-shadow-sm);
 }
 
-/* --- 主要按钮（哆啦蓝） --- */
+/* --- 主要按钮（哆啦蓝：hover 加深，active 按下再深一档） --- */
 .el-button--primary {
   --el-button-bg-color: var(--as-accent);
   --el-button-border-color: var(--as-accent);
@@ -222,9 +232,61 @@ body {
   --el-button-hover-bg-color: var(--as-accent-hover);
   --el-button-hover-border-color: var(--as-accent-hover);
   --el-button-hover-text-color: #ffffff;
-  --el-button-active-bg-color: var(--as-accent-hover);
-  --el-button-active-border-color: var(--as-accent-hover);
+  --el-button-active-bg-color: var(--as-accent-press);
+  --el-button-active-border-color: var(--as-accent-press);
   --el-button-active-text-color: #ffffff;
+}
+
+/* --- 默认按钮 plain 变体 --- */
+.el-button--default.is-plain {
+  --el-button-bg-color: transparent;
+  --el-button-border-color: var(--as-line);
+  --el-button-text-color: var(--as-fg-2);
+  --el-button-hover-bg-color: var(--as-canvas);
+  --el-button-hover-border-color: var(--as-line-strong);
+  --el-button-hover-text-color: var(--as-fg);
+  --el-button-active-bg-color: var(--as-canvas-2);
+  --el-button-active-border-color: var(--as-line-strong);
+  --el-button-active-text-color: var(--as-fg);
+}
+
+/* --- 主要按钮 plain 变体 --- */
+.el-button--primary.is-plain {
+  --el-button-bg-color: var(--as-accent-soft);
+  --el-button-border-color: var(--as-accent-line);
+  --el-button-text-color: var(--as-accent);
+  --el-button-hover-bg-color: var(--as-accent-soft);
+  --el-button-hover-border-color: var(--as-accent-line);
+  --el-button-hover-text-color: var(--as-accent-hover);
+  --el-button-active-bg-color: var(--as-accent-soft);
+  --el-button-active-border-color: var(--as-accent);
+  --el-button-active-text-color: var(--as-accent-hover);
+}
+
+/* --- 危险按钮 plain 变体（红鼻） --- */
+.el-button--danger.is-plain {
+  --el-button-bg-color: transparent;
+  --el-button-border-color: var(--as-danger-line);
+  --el-button-text-color: var(--as-danger);
+  --el-button-hover-bg-color: var(--as-danger-soft);
+  --el-button-hover-border-color: var(--as-danger-line);
+  --el-button-hover-text-color: var(--as-danger);
+  --el-button-active-bg-color: var(--as-danger-soft);
+  --el-button-active-border-color: var(--as-danger);
+  --el-button-active-text-color: var(--as-danger);
+}
+
+/* --- 成功按钮 plain 变体（语义绿） --- */
+.el-button--success.is-plain {
+  --el-button-bg-color: transparent;
+  --el-button-border-color: var(--as-success-line);
+  --el-button-text-color: var(--as-success);
+  --el-button-hover-bg-color: var(--as-success-soft);
+  --el-button-hover-border-color: var(--as-success-line);
+  --el-button-hover-text-color: var(--as-success);
+  --el-button-active-bg-color: var(--as-success-soft);
+  --el-button-active-border-color: var(--as-success);
+  --el-button-active-text-color: var(--as-success);
 }
 
 /* --- 输入框/文本域 --- */
@@ -334,4 +396,27 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--as-muted);
+}
+
+
+/* --- 标签（el-tag GitHub 风格胶囊） --- */
+.el-tag {
+  --el-tag-border-radius: 999px;
+  border-width: 1px;
+  font-size: 12px;
+}
+
+.el-tag--small {
+  height: 20px;
+  line-height: 18px;
+  padding: 0 8px;
+}
+
+/* 角色标识：比普通标签更大更醒目 */
+.el-tag--small.role-tag {
+  height: 24px;
+  line-height: 22px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 600;
 }
