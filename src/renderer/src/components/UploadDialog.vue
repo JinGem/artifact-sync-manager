@@ -8,10 +8,10 @@
   >
     <template #header>
       <div class="flex items-center gap-3">
-        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-900/40">
-          <el-icon :size="18" color="#67e8f9"><Upload /></el-icon>
+        <div class="flex h-9 w-9 items-center justify-center rounded-md bg-accent-soft">
+          <el-icon :size="18" color="var(--as-accent)"><Upload /></el-icon>
         </div>
-        <span class="text-lg font-semibold text-white">上传新版本</span>
+        <span class="text-lg font-semibold text-fg">上传新版本</span>
       </div>
     </template>
 
@@ -19,91 +19,89 @@
     <div v-if="!uploading" class="space-y-3">
       <div class="flex flex-row gap-3">
         <!-- 版本号自动递进（单列） -->
-        <div class="grow rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
+        <div class="grow space-y-3 rounded-lg border border-line bg-canvas p-4">
           <div class="flex items-center justify-between">
-            <p class="text-sm uppercase tracking-[0.25em] text-slate-400">版本号</p>
-            <span class="text-lg font-semibold text-cyan-300 font-mono tracking-tight">
+            <p class="text-sm text-muted">版本号</p>
+            <span class="font-mono text-lg font-semibold tracking-tight text-accent">
               {{ computedVersion }}
             </span>
           </div>
 
-          <div class="flex gap-3 flex-col">
-            <div class="flex grow gap-3 flex-row">
+          <div class="flex flex-col gap-3">
+            <div class="flex grow flex-row gap-3">
               <label
-                class="flex grow cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 transition"
+                class="flex grow cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 transition"
                 :class="
                   changeType === 'minor'
-                    ? 'border-cyan-300/50 bg-cyan-950/30'
-                    : 'border-white/10 bg-slate-950/35 hover:border-white/20'
+                    ? 'border-accent-line bg-accent-soft'
+                    : 'border-line bg-page hover:border-line-strong'
                 "
               >
                 <el-radio v-model="changeType" label="minor" />
-                <p class="text-sm font-medium text-white">新增</p>
+                <p class="text-sm font-medium text-fg">新增</p>
               </label>
               <label
-                class="flex grow cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 transition"
+                class="flex grow cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 transition"
                 :class="
                   changeType === 'patch'
-                    ? 'border-cyan-300/50 bg-cyan-950/30'
-                    : 'border-white/10 bg-slate-950/35 hover:border-white/20'
+                    ? 'border-accent-line bg-accent-soft'
+                    : 'border-line bg-page hover:border-line-strong'
                 "
               >
                 <el-radio v-model="changeType" label="patch" />
-                <p class="text-sm font-medium text-white">修复</p>
+                <p class="text-sm font-medium text-fg">修复</p>
               </label>
             </div>
             <label
-              class="flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 transition"
+              class="flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 transition"
               :class="
                 hasBreakingChange
-                  ? 'border-red-400/40 bg-red-950/20'
-                  : 'border-white/10 bg-slate-950/35 hover:border-white/20'
+                  ? 'border-danger-line bg-danger-soft'
+                  : 'border-line bg-page hover:border-line-strong'
               "
             >
               <el-checkbox v-model="hasBreakingChange" />
               <div>
-                <p class="text-sm font-medium text-white">包含破坏性变动</p>
-                <p class="text-xs text-slate-400 mt-0.5">勾选后将更新 major 版本号（主版本升级）</p>
+                <p class="text-sm font-medium text-fg">包含破坏性变动</p>
+                <p class="mt-0.5 text-sm text-muted">勾选后将更新 major 版本号（主版本升级）</p>
               </div>
             </label>
           </div>
         </div>
 
         <!-- 版本说明 -->
-        <div class="grow rounded-2xl border border-white/10 bg-white/5 p-4">
-          <p class="text-sm uppercase tracking-[0.25em] text-slate-400 mb-2">版本说明</p>
+        <div class="grow rounded-lg border border-line bg-canvas p-4">
+          <p class="mb-2 text-sm text-muted">版本说明</p>
           <el-input
             v-model="description"
             type="textarea"
             :rows="6"
             placeholder="可选，简要描述此版本的内容"
             :disabled="uploadStarted"
-            class="custom-input"
           />
         </div>
       </div>
 
       <!-- 文件预览（树形） -->
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-sm font-medium text-white">文件预览</p>
+      <div class="rounded-lg border border-line bg-canvas p-4">
+        <div class="mb-2 flex items-center justify-between">
+          <p class="text-sm font-medium text-fg">文件预览</p>
           <div class="flex items-center gap-3">
             <el-button
               v-if="!scanning && scannedFiles.length > 0"
               size="small"
               text
-              class="!text-slate-400 hover:!text-cyan-300"
               @click="scanLocalFiles"
             >
               重新扫描
             </el-button>
-            <span v-if="scannedFiles.length > 0" class="text-sm text-slate-500">
+            <span v-if="scannedFiles.length > 0" class="text-sm text-muted">
               {{ scannedFiles.length }} 个文件 · {{ formatSize(totalSize) }}
             </span>
-            <span v-else-if="!scanning" class="text-sm text-slate-500">无匹配文件</span>
+            <span v-else-if="!scanning" class="text-sm text-muted">无匹配文件</span>
           </div>
         </div>
-        <div v-if="scanning" class="flex items-center justify-center py-4 text-slate-400">
+        <div v-if="scanning" class="flex items-center justify-center py-4 text-muted">
           <el-icon :size="20" class="mr-2"><Loading /></el-icon>
           <span class="text-sm">正在扫描文件...</span>
         </div>
@@ -118,17 +116,21 @@
             class="file-tree"
           >
             <template #default="{ node, data }">
-              <span class="inline-flex items-center gap-2 w-full text-sm">
-                <el-icon :size="16" class="shrink-0" :color="data.isFile ? '#64748b' : '#67e8f9'">
+              <span class="inline-flex w-full items-center gap-2 text-sm">
+                <el-icon
+                  :size="16"
+                  class="shrink-0"
+                  :color="data.isFile ? 'var(--as-subtle)' : 'var(--as-accent)'"
+                >
                   <Document v-if="data.isFile" />
                   <FolderOpened v-else-if="node.expanded" />
                   <Folder v-else />
                 </el-icon>
-                <span class="text-slate-300 truncate">{{ data.label }}</span>
-                <span v-if="data.isFile" class="ml-auto shrink-0 text-xs text-slate-500">{{
+                <span class="truncate text-fg-2">{{ data.label }}</span>
+                <span v-if="data.isFile" class="ml-auto shrink-0 text-xs text-muted">{{
                   formatSize(data.size)
                 }}</span>
-                <span v-else class="ml-auto shrink-0 text-xs text-slate-500"
+                <span v-else class="ml-auto shrink-0 text-xs text-muted"
                   >{{ data.children.length }} 项 · {{ formatSize(data.size) }}</span
                 >
               </span>
@@ -139,7 +141,7 @@
         <!-- 已忽略文件 -->
         <div v-if="ignoredFiles.length > 0" class="mt-2">
           <button
-            class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-500 hover:bg-white/5 transition-colors"
+            class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-muted transition-colors hover:bg-canvas-2"
             @click="showIgnored = !showIgnored"
           >
             <el-icon :size="14" :class="{ 'rotate-90': showIgnored }" class="transition-transform"
@@ -147,14 +149,14 @@
             /></el-icon>
             已忽略 {{ ignoredFiles.length }} 个文件/目录
           </button>
-          <div v-show="showIgnored" class="mt-1 space-y-0.5 max-h-28 overflow-y-auto pl-6">
+          <div v-show="showIgnored" class="mt-1 max-h-28 space-y-0.5 overflow-y-auto pl-6">
             <div
               v-for="file in ignoredFiles"
               :key="file.relativePath"
               class="flex items-center justify-between rounded px-2.5 py-1 text-xs"
             >
-              <span class="truncate text-slate-500">{{ file.relativePath }}</span>
-              <span class="ml-2 shrink-0 text-slate-600">{{
+              <span class="truncate text-muted">{{ file.relativePath }}</span>
+              <span class="ml-2 shrink-0 text-subtle">{{
                 file.size > 0 ? formatSize(file.size) : "—"
               }}</span>
             </div>
@@ -162,12 +164,12 @@
         </div>
         <div
           v-else-if="scanError"
-          class="flex items-center justify-center py-4 text-red-400 text-sm"
+          class="flex items-center justify-center py-4 text-sm text-danger"
         >
           <el-icon :size="16" class="mr-1.5"><CircleCloseFilled /></el-icon>
           {{ scanError }}
         </div>
-        <div v-else class="flex items-center justify-center py-4 text-slate-500 text-sm">
+        <div v-else class="flex items-center justify-center py-4 text-sm text-muted">
           {{ props.localPath ? "未扫描到匹配的文件，请检查上传规则" : "请先配置上传本地路径" }}
         </div>
       </div>
@@ -184,8 +186,8 @@
           />
           <Loading v-else />
         </el-icon>
-        <p class="text-lg font-medium text-white">{{ progressText }}</p>
-        <p v-if="currentFile" class="text-sm text-slate-400 truncate max-w-full px-8">
+        <p class="text-lg font-medium text-fg">{{ progressText }}</p>
+        <p v-if="currentFile" class="max-w-full truncate px-8 text-sm text-muted">
           {{ currentFile }}
         </p>
       </div>
@@ -195,41 +197,25 @@
         :status="progressStatus"
         :stroke-width="20"
         :textInside="true"
-        class="!px-2"
       />
 
-      <div class="text-center text-sm text-slate-500">
-        {{ progressCurrent }} / {{ progressTotal }}
-      </div>
+      <div class="text-center text-sm text-muted">{{ progressCurrent }} / {{ progressTotal }}</div>
     </div>
 
     <template #footer>
       <div class="flex items-center justify-end gap-3">
-        <el-button
-          v-if="!uploadStarted"
-          plain
-          class="!border-white/10 !text-slate-300 hover:!bg-white/5"
-          @click="handleClose"
-        >
-          取消
-        </el-button>
+        <el-button v-if="!uploadStarted" plain @click="handleClose">取消</el-button>
         <el-button
           v-if="!uploadStarted"
           type="primary"
           :loading="scanning"
           :disabled="!props.localPath || !!scanError"
-          class="!rounded-xl !px-6"
           @click="handleStartUpload"
         >
           {{ scanning ? "扫描中..." : "开始上传" }}
         </el-button>
 
-        <el-button
-          v-if="uploadStarted"
-          plain
-          class="!border-red-400/40 !text-red-300 hover:!bg-red-950/30"
-          @click="handleCancel"
-        >
+        <el-button v-if="uploadStarted" type="danger" plain @click="handleCancel">
           取消上传
         </el-button>
       </div>
@@ -354,9 +340,10 @@ const progressStatus = computed(() => {
 });
 
 const progressIconColor = computed(() => {
-  if (progressPhase.value === "error" || progressPhase.value === "cancelled") return "#f87171";
-  if (progressPhase.value === "completed") return "#34d399";
-  return "#67e8f9";
+  if (progressPhase.value === "error" || progressPhase.value === "cancelled")
+    return "var(--as-danger)";
+  if (progressPhase.value === "completed") return "var(--as-success)";
+  return "var(--as-accent)";
 });
 
 const progressText = computed(() => {
@@ -631,10 +618,10 @@ const handleClosed = (): void => {
 }
 
 .file-tree-wrapper .el-tree {
-  --el-tree-node-hover-bg-color: rgba(255, 255, 255, 0.05);
+  --el-tree-node-hover-bg-color: var(--as-canvas-2);
   --el-tree-node-content-height: 28px;
   background: transparent;
-  color: #e2e8f0;
+  color: var(--as-fg-2);
 }
 
 .file-tree-wrapper .el-tree-node__content {
@@ -642,7 +629,7 @@ const handleClosed = (): void => {
 }
 
 .file-tree-wrapper .el-tree-node__expand-icon {
-  color: #64748b;
+  color: var(--as-muted);
 }
 
 .file-tree-wrapper .el-tree-node__expand-icon.is-leaf {

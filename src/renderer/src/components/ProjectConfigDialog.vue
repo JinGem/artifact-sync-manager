@@ -7,13 +7,13 @@
   >
     <template #header>
       <div class="flex items-center gap-3">
-        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-900/40">
-          <el-icon :size="18" color="#34d399">
+        <div class="flex h-9 w-9 items-center justify-center rounded-md bg-accent-soft">
+          <el-icon :size="18" color="var(--as-accent)">
             <EditPen v-if="editingProjectId" />
             <Plus v-else />
           </el-icon>
         </div>
-        <span class="text-lg font-semibold text-white">{{
+        <span class="text-lg font-semibold text-fg">{{
           editingProjectId ? "编辑项目配置" : "新建项目配置"
         }}</span>
       </div>
@@ -65,7 +65,7 @@
               :rows="3"
               placeholder="使用 .gitignore 风格规则，例如：dist/"
             />
-            <p class="mt-1 text-xs text-slate-400">
+            <p class="mt-1 text-xs text-muted">
               可用 `!` 取反重新包含文件（如 `!src/test.vue`），但父目录已被排除时（如
               `src/`）无法重新包含。
             </p>
@@ -80,7 +80,7 @@
               :rows="3"
               placeholder="使用 .gitignore 风格规则，例如：*.log"
             />
-            <p class="mt-1 text-xs text-slate-400">
+            <p class="mt-1 text-xs text-muted">
               可用 `!` 取反重新包含文件（如 `!src/test.vue`），但父目录已被排除时（如
               `src/`）无法重新包含。
             </p>
@@ -90,7 +90,7 @@
     </el-form>
 
     <template #footer>
-      <div class="flex gap-3 justify-end">
+      <div class="flex justify-end gap-3">
         <el-button @click="emit('update:visible', false)">取消</el-button>
         <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editingProjectId ? "保存修改" : "创建项目" }}

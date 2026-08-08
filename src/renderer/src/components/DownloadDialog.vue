@@ -8,28 +8,33 @@
   >
     <template #header>
       <div class="flex items-center gap-3">
-        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-900/40">
-          <el-icon :size="18" color="#34d399"><Download /></el-icon>
+        <div class="flex h-9 w-9 items-center justify-center rounded-md bg-accent-soft">
+          <el-icon :size="18" color="var(--as-accent)"><Download /></el-icon>
         </div>
-        <span class="text-lg font-semibold text-white">下载版本</span>
-        <el-tag v-if="!showingConfirm" size="small" effect="dark" type="info">{{
-          versionName
-        }}</el-tag>
+        <span class="text-lg font-semibold text-fg">下载版本</span>
+        <span
+          v-if="!showingConfirm"
+          class="inline-flex h-5 items-center rounded-full border border-line-soft bg-canvas px-2 text-[11px] leading-5 text-muted"
+        >
+          {{ versionName }}
+        </span>
       </div>
     </template>
 
     <!-- 阶段1：主版本确认区（内嵌，仅 vX.0.0 显示） -->
     <div v-if="showingConfirm" class="space-y-5">
       <!-- 警告横幅 -->
-      <div class="rounded-2xl border border-amber-400/30 bg-amber-500/10 p-4">
+      <div class="rounded-lg border border-warning-line bg-warning-soft p-4">
         <div class="flex items-start gap-3">
-          <el-icon :size="20" color="#fbbf24" class="mt-0.5 shrink-0"><WarningFilled /></el-icon>
+          <el-icon :size="20" color="var(--as-warning)" class="mt-0.5 shrink-0">
+            <WarningFilled />
+          </el-icon>
           <div>
-            <p class="text-sm font-medium text-white">主版本更新确认</p>
-            <p class="text-xs text-amber-400/80 mt-1">
-              此版本为主版本更新（<el-tag size="small" effect="dark" type="warning">{{
-                versionName
-              }}</el-tag
+            <p class="text-sm font-medium text-fg">主版本更新确认</p>
+            <p class="mt-1 text-xs text-warning">
+              此版本为主版本更新（<span
+                class="inline-flex h-5 items-center rounded-full border border-warning-line bg-warning-soft px-1.5 text-[11px] leading-5 text-warning"
+                >{{ versionName }}</span
               >）， 下载后可能需要手动执行额外操作。
             </p>
           </div>
@@ -37,23 +42,21 @@
       </div>
 
       <!-- 版本说明 -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <p class="text-sm font-medium text-white mb-3">版本说明</p>
-        <div v-if="loadingDesc" class="flex items-center justify-center py-4 text-slate-400">
+      <div class="rounded-lg border border-line bg-canvas p-5">
+        <p class="mb-3 text-sm font-medium text-fg">版本说明</p>
+        <div v-if="loadingDesc" class="flex items-center justify-center py-4 text-muted">
           <el-icon :size="18" class="mr-2"><Loading /></el-icon>
           <span class="text-sm">正在加载版本说明...</span>
         </div>
         <div
           v-else-if="confirmDescription"
-          class="rounded-xl bg-cyan-950/20 border border-cyan-400/20 p-4 text-sm leading-relaxed text-slate-200 whitespace-pre-wrap max-h-48 overflow-y-auto"
+          class="major-desc-box max-h-48 overflow-y-auto rounded-md border border-accent-line bg-accent-soft p-4 text-sm leading-relaxed whitespace-pre-wrap text-fg-2"
         >
           {{ confirmDescription }}
         </div>
         <div v-else class="flex flex-col items-center gap-3 py-4">
-          <p class="text-sm text-amber-400">版本说明数据为空</p>
-          <p class="text-xs text-slate-500 text-center">
-            可能因网络或远程目录异常导致，可尝试重新扫描
-          </p>
+          <p class="text-sm text-warning">版本说明数据为空</p>
+          <p class="text-center text-xs text-muted">可能因网络或远程目录异常导致，可尝试重新扫描</p>
           <el-button size="small" class="mt-1" @click="reloadDescription" :loading="loadingDesc">
             <el-icon :size="14" class="mr-1"><Refresh /></el-icon>
             重新扫描版本信息
@@ -63,102 +66,85 @@
 
       <!-- 确认复选框 -->
       <label
-        class="flex cursor-pointer items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 px-4 py-3 hover:border-white/20 transition"
+        class="flex cursor-pointer items-center gap-2.5 rounded-lg border border-line bg-page px-4 py-3 transition hover:border-line-strong"
       >
         <el-checkbox v-model="majorConfirmed" size="large" />
-        <span class="text-sm text-slate-400">我已知晓，此版本可能需要执行额外操作</span>
+        <span class="text-sm text-muted">我已知晓，此版本可能需要执行额外操作</span>
       </label>
     </div>
 
     <!-- 阶段2：正常下载设置（主版本确认后，或非主版本直接进入） -->
     <div v-else-if="!downloading" class="space-y-5">
       <!-- 版本与目录信息 -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5 space-y-3">
-        <div class="flex items-center justify-between rounded-xl bg-slate-950/35 px-4 py-3">
-          <span class="text-sm text-slate-400">目标目录</span>
-          <span class="text-sm text-slate-200 truncate ml-4 max-w-[360px]">{{ localPath }}</span>
+      <div class="space-y-3 rounded-lg border border-line bg-canvas p-5">
+        <div class="flex items-center justify-between rounded-md bg-page px-4 py-3">
+          <span class="text-sm text-muted">目标目录</span>
+          <span class="ml-4 max-w-[360px] truncate text-sm text-fg-2">{{ localPath }}</span>
         </div>
-        <div class="flex items-center justify-between rounded-xl bg-slate-950/35 px-4 py-3">
-          <span class="text-sm text-slate-400">文件规则</span>
-          <span class="text-sm text-slate-200">{{ rules ? "已配置" : "无规则" }}</span>
+        <div class="flex items-center justify-between rounded-md bg-page px-4 py-3">
+          <span class="text-sm text-muted">文件规则</span>
+          <span class="text-sm text-fg-2">{{ rules ? "已配置" : "无规则" }}</span>
         </div>
       </div>
 
       <!-- 冲突策略 -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <p class="text-sm uppercase tracking-[0.25em] text-slate-400 mb-4">目标目录处理方式</p>
+      <div class="rounded-lg border border-line bg-canvas p-5">
+        <p class="mb-4 text-sm text-muted">目标目录处理方式</p>
         <div class="grid gap-3">
           <label
-            class="flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition"
+            class="flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition"
             :class="
               mode === 'overwrite'
-                ? 'border-cyan-300/50 bg-cyan-950/30'
-                : 'border-white/10 bg-slate-950/35 hover:border-white/20'
+                ? 'border-accent-line bg-accent-soft'
+                : 'border-line bg-page hover:border-line-strong'
             "
           >
             <el-radio v-model="mode" label="overwrite" size="large" />
             <div>
-              <p class="text-sm font-medium text-white">覆盖已有文件</p>
-              <p class="text-sm text-slate-400 mt-0.5">同名文件将被直接替换，本地多余文件保留</p>
+              <p class="text-sm font-medium text-fg">覆盖已有文件</p>
+              <p class="mt-0.5 text-sm text-muted">同名文件将被直接替换，本地多余文件保留</p>
             </div>
           </label>
           <label
-            class="flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition"
+            class="flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition"
             :class="
               mode === 'clear'
-                ? 'border-cyan-300/50 bg-cyan-950/30'
-                : 'border-white/10 bg-slate-950/35 hover:border-white/20'
+                ? 'border-accent-line bg-accent-soft'
+                : 'border-line bg-page hover:border-line-strong'
             "
           >
             <el-radio v-model="mode" label="clear" size="large" />
             <div>
-              <p class="text-sm font-medium text-white">先清空目标目录</p>
-              <p class="text-sm text-slate-400 mt-0.5">下载前删除目标目录全部内容，保证完全一致</p>
+              <p class="text-sm font-medium text-fg">先清空目标目录</p>
+              <p class="mt-0.5 text-sm text-muted">下载前删除目标目录全部内容，保证完全一致</p>
             </div>
           </label>
         </div>
       </div>
 
       <!-- 文件预览 -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-sm font-medium text-white">文件预览</p>
+      <div class="rounded-lg border border-line bg-canvas p-5">
+        <div class="mb-3 flex items-center justify-between">
+          <p class="text-sm font-medium text-fg">文件预览</p>
           <div class="flex items-center gap-2">
             <template v-if="!scanning && scannedFiles.length > 0">
-              <el-button
-                size="small"
-                text
-                class="!text-slate-400 hover:!text-cyan-300"
-                @click="expandAll"
-              >
+              <el-button size="small" text @click="expandAll">
                 <el-icon :size="14" class="mr-1"><Fold /></el-icon>
                 展开全部
               </el-button>
-              <el-button
-                size="small"
-                text
-                class="!text-slate-400 hover:!text-cyan-300"
-                @click="collapseAll"
-              >
+              <el-button size="small" text @click="collapseAll">
                 <el-icon :size="14" class="mr-1"><Fold /></el-icon>
                 收起全部
               </el-button>
-              <el-button
-                size="small"
-                text
-                class="!text-slate-400 hover:!text-cyan-300"
-                @click="scanRemote"
-              >
-                重新扫描
-              </el-button>
+              <el-button size="small" text @click="scanRemote">重新扫描</el-button>
             </template>
-            <span v-if="scannedFiles.length > 0" class="text-sm text-slate-500">
+            <span v-if="scannedFiles.length > 0" class="text-sm text-muted">
               {{ scannedFiles.length }} 个文件 · {{ formatSize(totalSize) }}
             </span>
-            <span v-else-if="!scanning" class="text-sm text-slate-500">无匹配文件</span>
+            <span v-else-if="!scanning" class="text-sm text-muted">无匹配文件</span>
           </div>
         </div>
-        <div v-if="scanning" class="flex items-center justify-center py-6 text-slate-400">
+        <div v-if="scanning" class="flex items-center justify-center py-6 text-muted">
           <el-icon :size="20" class="mr-2"><Loading /></el-icon>
           <span class="text-sm">正在扫描远程文件...</span>
         </div>
@@ -174,17 +160,21 @@
             class="file-tree"
           >
             <template #default="{ node, data }">
-              <span class="inline-flex items-center gap-2 w-full text-sm">
-                <el-icon :size="16" class="shrink-0" :color="data.isFile ? '#64748b' : '#67e8f9'">
+              <span class="inline-flex w-full items-center gap-2 text-sm">
+                <el-icon
+                  :size="16"
+                  class="shrink-0"
+                  :color="data.isFile ? 'var(--as-subtle)' : 'var(--as-accent)'"
+                >
                   <Document v-if="data.isFile" />
                   <FolderOpened v-else-if="node.expanded" />
                   <Folder v-else />
                 </el-icon>
-                <span class="text-slate-300 truncate">{{ data.label }}</span>
-                <span v-if="data.isFile" class="ml-auto shrink-0 text-xs text-slate-500">{{
+                <span class="truncate text-fg-2">{{ data.label }}</span>
+                <span v-if="data.isFile" class="ml-auto shrink-0 text-xs text-muted">{{
                   formatSize(data.size)
                 }}</span>
-                <span v-else class="ml-auto shrink-0 text-xs text-slate-500"
+                <span v-else class="ml-auto shrink-0 text-xs text-muted"
                   >{{ data.children.length }} 项 · {{ formatSize(data.size) }}</span
                 >
               </span>
@@ -193,12 +183,12 @@
         </div>
         <div
           v-else-if="scanError"
-          class="flex items-center justify-center py-6 text-red-400 text-sm"
+          class="flex items-center justify-center py-6 text-sm text-danger"
         >
           <el-icon :size="16" class="mr-1.5"><CircleCloseFilled /></el-icon>
           {{ scanError }}
         </div>
-        <div v-else class="flex items-center justify-center py-6 text-slate-500 text-sm">
+        <div v-else class="flex items-center justify-center py-6 text-sm text-muted">
           {{ props.remoteDirectory ? "未扫描到匹配的文件，请检查下载规则" : "请先配置远程目录" }}
         </div>
       </div>
@@ -215,11 +205,11 @@
           />
           <Loading v-else />
         </el-icon>
-        <p class="text-lg font-medium text-white">{{ progressText }}</p>
-        <p v-if="currentFile" class="text-sm text-slate-400 truncate max-w-full px-8">
+        <p class="text-lg font-medium text-fg">{{ progressText }}</p>
+        <p v-if="currentFile" class="max-w-full truncate px-8 text-sm text-muted">
           {{ currentFile }}
         </p>
-        <p v-if="warnMessage" class="mt-1 text-sm text-amber-400">
+        <p v-if="warnMessage" class="mt-1 text-sm text-warning">
           {{ warnMessage }}
         </p>
       </div>
@@ -229,29 +219,19 @@
         :status="progressStatus"
         :stroke-width="20"
         :textInside="true"
-        class="!px-2"
       />
 
-      <div class="text-center text-xs text-slate-500">
-        {{ progressCurrent }} / {{ progressTotal }}
-      </div>
+      <div class="text-center text-xs text-muted">{{ progressCurrent }} / {{ progressTotal }}</div>
     </div>
 
     <template #footer>
       <div class="flex items-center justify-end gap-3">
         <!-- 主版本确认阶段 -->
         <template v-if="showingConfirm">
-          <el-button
-            plain
-            class="!border-white/10 !text-slate-400 hover:!bg-white/5"
-            @click="handleClose"
-          >
-            取消
-          </el-button>
+          <el-button plain @click="handleClose">取消</el-button>
           <el-button
             type="primary"
             :disabled="!majorConfirmed || loadingDesc"
-            class="!rounded-xl !px-6"
             @click="handleConfirmMajor"
           >
             我已知晓，开始下载
@@ -260,32 +240,14 @@
 
         <!-- 正常下载阶段 -->
         <template v-else-if="!started">
-          <el-button
-            plain
-            class="!border-white/10 !text-slate-400 hover:!bg-white/5"
-            @click="handleClose"
-          >
-            取消
-          </el-button>
-          <el-button
-            type="primary"
-            :disabled="!localPath"
-            class="!rounded-xl !px-6"
-            @click="handleStartDownload"
-          >
+          <el-button plain @click="handleClose">取消</el-button>
+          <el-button type="primary" :disabled="!localPath" @click="handleStartDownload">
             开始下载
           </el-button>
         </template>
 
         <!-- 下载进行中 -->
-        <el-button
-          v-if="started"
-          plain
-          class="!border-red-400/40 !text-red-300 hover:!bg-red-950/30"
-          @click="handleCancel"
-        >
-          取消下载
-        </el-button>
+        <el-button v-if="started" type="danger" plain @click="handleCancel"> 取消下载 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -431,9 +393,10 @@ const progressStatus = computed(() => {
 });
 
 const progressIconColor = computed(() => {
-  if (progressPhase.value === "error" || progressPhase.value === "cancelled") return "#f87171";
-  if (progressPhase.value === "completed") return "#34d399";
-  return "#67e8f9";
+  if (progressPhase.value === "error" || progressPhase.value === "cancelled")
+    return "var(--as-danger)";
+  if (progressPhase.value === "completed") return "var(--as-success)";
+  return "var(--as-accent)";
 });
 
 const progressText = computed(() => {
@@ -684,10 +647,10 @@ const handleClosed = (): void => {
 }
 
 .file-tree-wrapper .el-tree {
-  --el-tree-node-hover-bg-color: rgba(255, 255, 255, 0.05);
+  --el-tree-node-hover-bg-color: var(--as-canvas-2);
   --el-tree-node-content-height: 28px;
   background: transparent;
-  color: #e2e8f0;
+  color: var(--as-fg-2);
 }
 
 .file-tree-wrapper .el-tree-node__content {
@@ -695,7 +658,7 @@ const handleClosed = (): void => {
 }
 
 .file-tree-wrapper .el-tree-node__expand-icon {
-  color: #64748b;
+  color: var(--as-muted);
 }
 
 .file-tree-wrapper .el-tree-node__expand-icon.is-leaf {
@@ -708,7 +671,7 @@ const handleClosed = (): void => {
 }
 
 .major-desc-box::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--as-line-strong);
   border-radius: 2px;
 }
 </style>
