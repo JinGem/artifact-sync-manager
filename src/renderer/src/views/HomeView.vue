@@ -1,60 +1,27 @@
 <template>
   <main
-    class="mx-auto flex h-[calc(100vh-var(--spacing)*11)] max-w-7xl flex-col gap-5 px-6 py-6 lg:px-10"
+    class="mx-auto flex h-[calc(100vh-var(--spacing)*14)] max-w-7xl flex-col gap-5 px-6 py-6 lg:px-10"
   >
-    <!-- Hero: 品牌介绍 + 快速概览 -->
-    <section class="grid shrink-0 gap-5 xl:grid-cols-[1.3fr_0.7fr]">
-      <!-- 品牌区 -->
-      <div class="rounded-lg border border-line bg-page p-7 shadow-sm">
-        <p class="text-sm text-muted">Artifact Sync Manager</p>
-        <h1 class="mt-3 text-2xl font-semibold tracking-tight text-fg lg:text-3xl">
-          本地产物同步管理
-        </h1>
-        <p class="mt-2 max-w-2xl text-sm leading-6 text-muted">
-          面向开发团队的产物同步工具。管理项目配置、扫描远程版本、上传下载，支持规则过滤与任务进度追踪。集成远程目录监控与系统托盘，持久化版本生命周期管理。
-        </p>
-        <div class="mt-3 flex items-center gap-2">
-          <span
-            class="inline-flex h-5 items-center rounded-full border border-accent-line bg-accent-soft px-1.5 text-[11px] leading-5 text-accent"
-          >
-            v{{ api.version }}
-          </span>
-        </div>
-        <div class="mt-5 flex items-center gap-4">
-          <el-button type="primary" :icon="Plus" size="default" @click="openCreateDialog">
-            新建项目
-          </el-button>
-          <span class="text-sm text-subtle">已配置 {{ state.projects.length }} 个项目</span>
-        </div>
+    <!-- Hero: 欢迎 + 版本 + 简介 -->
+    <section class="shrink-0 rounded-lg border border-line bg-page p-6 shadow-sm">
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-xl font-semibold text-fg">欢迎，{{ operatorName }}。</h1>
+        <el-tag
+          v-if="state.settings.role"
+          size="small"
+          type="primary"
+          effect="plain"
+          class="role-tag"
+        >
+          {{ state.settings.role === "developer" ? "研发" : "测试" }}
+        </el-tag>
       </div>
-
-      <!-- 快速概览 -->
-      <div class="grid grid-cols-2 gap-3">
-        <div
-          class="rounded-lg border border-line bg-page p-4 transition hover:border-accent-line hover:shadow-sm"
-        >
-          <p class="text-xs text-subtle">操作者</p>
-          <p class="mt-2 text-lg font-semibold text-fg">
-            {{ operatorName }}
-          </p>
-        </div>
-        <div
-          class="rounded-lg border border-line bg-page p-4 transition hover:border-accent-line hover:shadow-sm"
-        >
-          <p class="text-xs text-subtle">项目总数</p>
-          <p class="mt-2 text-lg font-semibold text-fg">
-            {{ state.projects.length }}
-          </p>
-        </div>
-        <div
-          class="col-span-2 rounded-lg border border-line bg-page p-4 transition hover:border-accent-line hover:shadow-sm"
-        >
-          <p class="text-xs text-subtle">最近项目</p>
-          <p class="mt-2 leading-6 text-fg-2">
-            {{ recentProjectName || "暂无最近使用的项目" }}
-          </p>
-        </div>
-      </div>
+      <p class="mt-2 text-sm text-muted">
+        软件版本：<span class="font-mono text-fg-2">{{ api.version }}</span>
+      </p>
+      <p class="mt-1 max-w-2xl text-sm leading-6 text-muted">
+        面向开发团队的产物同步工具：管理项目配置、扫描远程版本、上传下载，支持规则过滤与任务进度追踪。
+      </p>
     </section>
 
     <!-- 项目列表 -->
@@ -62,12 +29,11 @@
       <div class="mb-3 flex shrink-0 items-center justify-between">
         <div class="flex items-center gap-3">
           <h2 class="text-sm font-semibold text-fg">项目列表</h2>
-          <span
-            class="inline-flex h-5 items-center rounded-full border border-success-line bg-success-soft px-2 text-[11px] leading-5 text-success"
-          >
+          <el-tag size="small" type="success" effect="plain">
             {{ state.projects.length }} 个项目
-          </span>
+          </el-tag>
         </div>
+        <el-button type="primary" :icon="Plus" @click="openCreateDialog"> 新建项目 </el-button>
       </div>
 
       <!-- 空状态 -->
@@ -82,9 +48,7 @@
           <p class="text-sm font-medium text-fg-2">还没有项目</p>
           <p class="mt-1 text-sm text-muted">创建第一个项目开始管理产物同步</p>
         </div>
-        <el-button type="primary" :icon="Plus" size="small" @click="openCreateDialog">
-          新建项目
-        </el-button>
+        <el-button type="primary" :icon="Plus" @click="openCreateDialog"> 新建项目 </el-button>
       </div>
 
       <!-- 项目卡片列表 -->
@@ -101,12 +65,14 @@
                 <h3 class="text-base font-semibold text-fg">
                   {{ project.name }}
                 </h3>
-                <span
+                <el-tag
                   v-if="project.id === state.settings.recentProjectId"
-                  class="inline-flex h-5 items-center rounded-full border border-accent-line bg-accent-soft px-2 text-[11px] leading-5 text-accent"
+                  size="small"
+                  type="primary"
+                  effect="plain"
                 >
                   最近
-                </span>
+                </el-tag>
               </div>
               <div class="mt-4 grid gap-2.5 sm:grid-cols-3" @click.stop>
                 <div
@@ -148,18 +114,17 @@
               </div>
             </div>
             <div class="flex shrink-0 flex-wrap items-center gap-2" @click.stop>
-              <span
-                v-if="hasNewerVersion(project)"
-                class="inline-flex h-5 items-center rounded-full border border-warning-line bg-warning-soft px-1.5 text-[11px] leading-5 text-warning"
-              >
+              <el-tag v-if="hasNewerVersion(project)" size="small" type="warning" effect="plain">
                 有新版本
-              </span>
-              <span
+              </el-tag>
+              <el-tag
                 v-if="project.currentDownloadedVersion"
-                class="inline-flex h-5 items-center rounded-full border border-line-soft bg-canvas px-1.5 text-[11px] leading-5 text-muted"
+                size="small"
+                type="info"
+                effect="plain"
               >
                 {{ project.currentDownloadedVersion }}
-              </span>
+              </el-tag>
               <el-button size="small" plain :icon="View" @click="goToProjectDetail(project.id)">
                 详情
               </el-button>
@@ -212,15 +177,11 @@ const state = reactive<AppState>({
   projects: [],
 });
 
+const operatorName = computed(() => state.settings.operatorName || "未设置");
+
 const showProjectDialog = ref(false);
 const editingProject = ref<ProjectConfig | null>(null);
 const projectLatestVersions = ref<Record<string, string>>({});
-
-const operatorName = computed(() => state.settings.operatorName || "未设置");
-
-const recentProjectName = computed(
-  () => state.projects.find((item) => item.id === state.settings.recentProjectId)?.name ?? "",
-);
 
 const parseSemver = (name: string): number[] => {
   const parts = name.replace(/^v/i, "").split(".").map(Number);
