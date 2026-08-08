@@ -1,6 +1,6 @@
 <template>
   <main
-    class="mx-auto flex min-h-[calc(100vh-var(--spacing)*11)] max-w-4xl flex-col gap-6 px-6 py-8 lg:px-10"
+    class="mx-auto flex min-h-[calc(100vh-var(--spacing)*14)] max-w-4xl flex-col gap-6 px-6 py-8 lg:px-10"
   >
     <!-- 头部 -->
     <div class="flex items-center gap-4">
@@ -13,16 +13,9 @@
       <template #header>
         <div class="flex items-center justify-between">
           <span class="text-base font-semibold text-fg">操作者</span>
-          <span
-            class="inline-flex h-5 items-center rounded-full border px-2 text-[11px] leading-5"
-            :class="
-              operatorName
-                ? 'border-success-line bg-success-soft text-success'
-                : 'border-warning-line bg-warning-soft text-warning'
-            "
-          >
+          <el-tag size="small" effect="plain" :type="operatorName ? 'success' : 'warning'">
             {{ operatorName ? "已设置" : "未设置" }}
-          </span>
+          </el-tag>
         </div>
       </template>
 
@@ -102,11 +95,7 @@
       <template #header>
         <div class="flex items-center justify-between">
           <span class="text-base font-semibold text-fg">危险操作</span>
-          <span
-            class="inline-flex h-5 items-center rounded-full border border-danger-line bg-danger-soft px-2 text-[11px] leading-5 text-danger"
-          >
-            谨慎
-          </span>
+          <el-tag size="small" type="danger" effect="plain"> 谨慎 </el-tag>
         </div>
       </template>
 

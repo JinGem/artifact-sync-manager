@@ -1,29 +1,23 @@
 <template>
   <main
-    class="mx-auto flex min-h-[calc(100vh-var(--spacing)*11)] max-w-5xl flex-col gap-6 px-6 py-8 lg:px-10"
+    class="mx-auto flex min-h-[calc(100vh-var(--spacing)*14)] max-w-5xl flex-col gap-6 px-6 py-8 lg:px-10"
   >
     <!-- 头部 -->
     <div class="flex items-center gap-4">
       <el-button :icon="ArrowLeft" text @click="goBack">返回</el-button>
       <h1 class="text-2xl font-semibold text-fg">任务中心</h1>
-      <span
-        v-if="store.failedCount > 0"
-        class="inline-flex h-5 items-center rounded-full border border-danger-line bg-danger-soft px-2 text-[11px] leading-5 text-danger"
-      >
+      <el-tag v-if="store.failedCount > 0" size="small" type="danger" effect="plain">
         {{ store.failedCount }} 个失败
-      </span>
-      <span
-        v-if="store.runningCount > 0"
-        class="inline-flex h-5 items-center rounded-full border border-warning-line bg-warning-soft px-2 text-[11px] leading-5 text-warning"
-      >
+      </el-tag>
+      <el-tag v-if="store.runningCount > 0" size="small" type="warning" effect="plain">
         {{ store.runningCount }} 个进行中
-      </span>
+      </el-tag>
     </div>
 
     <!-- 批量操作 -->
     <div v-if="store.tasks.length > 0" class="flex gap-3">
-      <el-button size="small" plain @click="store.clearCompleted">清除已完成</el-button>
-      <el-button size="small" plain @click="store.clearAll">清除全部</el-button>
+      <el-button plain @click="store.clearCompleted">清除已完成</el-button>
+      <el-button plain @click="store.clearAll">清除全部</el-button>
     </div>
 
     <!-- 空状态 -->
@@ -64,7 +58,7 @@
                 <span class="text-sm font-medium text-fg">
                   {{ task.type === "upload" ? "上传" : "下载" }}
                 </span>
-                <el-tag size="small" :type="statusTag(task.status)" effect="dark">
+                <el-tag size="small" effect="plain" :type="statusTagType(task.status)">
                   {{ statusLabel(task.status) }}
                 </el-tag>
               </div>
@@ -125,7 +119,6 @@
             <el-button
               v-if="task.status === 'failed'"
               type="primary"
-              size="small"
               plain
               @click="store.retryTask(task.id)"
             >
@@ -193,7 +186,7 @@ const statusIconColor = (status: string): string => {
   }
 };
 
-const statusTag = (status: string): "success" | "danger" | "warning" | "info" => {
+const statusTagType = (status: string): "success" | "danger" | "warning" => {
   switch (status) {
     case "completed":
       return "success";
@@ -202,7 +195,7 @@ const statusTag = (status: string): "success" | "danger" | "warning" | "info" =>
     case "cancelled":
       return "warning";
     default:
-      return "info";
+      return "warning";
   }
 };
 

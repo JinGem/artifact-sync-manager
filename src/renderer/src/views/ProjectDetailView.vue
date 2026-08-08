@@ -1,6 +1,6 @@
 <template>
   <main
-    class="mx-auto flex min-h-[calc(100vh-var(--spacing)*11)] max-w-7xl flex-col gap-5 px-6 py-6 lg:px-10"
+    class="mx-auto flex min-h-[calc(100vh-var(--spacing)*14)] max-w-7xl flex-col gap-5 px-6 py-6 lg:px-10"
   >
     <!-- 头部 -->
     <div class="flex shrink-0 items-center gap-4">
@@ -15,9 +15,8 @@
       <div class="mb-5 flex items-center justify-between">
         <span class="text-base font-semibold text-fg">项目信息</span>
         <div class="flex items-center gap-2">
-          <el-button size="small" plain @click="openEditDialog"> 编辑项目 </el-button>
+          <el-button plain @click="openEditDialog"> 编辑项目 </el-button>
           <el-button
-            size="small"
             type="primary"
             :icon="Upload"
             :disabled="!project?.uploadLocalPath || userRole === 'tester'"
@@ -80,21 +79,9 @@
       <div class="flex shrink-0 items-center justify-between px-6 pb-3 pt-5">
         <div class="flex items-center gap-3">
           <span class="text-sm font-semibold text-fg">版本列表</span>
-          <span
-            class="inline-flex h-5 items-center rounded-full border border-success-line bg-success-soft px-2 text-[11px] leading-5 text-success"
-          >
-            {{ versions.length }} 个版本
-          </span>
+          <el-tag size="small" type="success" effect="plain"> {{ versions.length }} 个版本 </el-tag>
         </div>
-        <el-button
-          size="small"
-          type="primary"
-          :loading="loading"
-          :icon="Refresh"
-          @click="loadVersions"
-        >
-          刷新
-        </el-button>
+        <el-button plain :loading="loading" :icon="Refresh" @click="loadVersions"> 刷新 </el-button>
       </div>
 
       <!-- 浮动操作栏 -->
@@ -109,10 +96,11 @@
             个版本
           </span>
           <div class="flex items-center gap-2">
-            <el-button size="small" plain @click="clearSelection"> 取消选择 </el-button>
+            <el-button plain @click="clearSelection"> 取消选择 </el-button>
             <el-button
               size="small"
               type="danger"
+              plain
               :loading="isBatchDeleting"
               @click="showBatchDeleteConfirm = true"
             >
@@ -173,12 +161,14 @@
                 <p class="font-mono text-sm font-semibold text-fg">
                   {{ row.name }}
                 </p>
-                <span
+                <el-tag
                   v-if="project?.currentDownloadedVersion === row.name"
-                  class="inline-flex h-[18px] items-center rounded-full border border-success-line bg-success-soft px-1.5 text-[10px] leading-[18px] text-success"
+                  size="small"
+                  type="success"
+                  effect="plain"
                 >
                   当前版本
-                </span>
+                </el-tag>
               </div>
             </template>
           </el-table-column>
