@@ -6,6 +6,7 @@
 
 ```sh
 npm run dev          # 启动 Electron 开发环境
+npm test             # 排除规则回归测试
 npm run lint         # ESLint + Prettier
 npm run typecheck    # vue-tsc --noEmit
 npm run build        # 图标、类型检查和生产构建

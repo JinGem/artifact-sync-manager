@@ -3,8 +3,12 @@
     class="window-header grid h-14 shrink-0 select-none grid-cols-[1fr_auto_1fr] items-center border-b border-line bg-canvas"
   >
     <!-- 左：品牌（可点击回首页） -->
-    <div class="no-drag flex min-w-0 items-center pl-4">
-      <button type="button" class="brand-link flex min-w-0 items-center gap-2.5" @click="goHome">
+    <div class="flex min-w-0 items-center pl-4">
+      <button
+        type="button"
+        class="no-drag brand-link flex min-w-0 items-center gap-2.5"
+        @click="goHome"
+      >
         <svg
           class="h-[26px] w-[26px] shrink-0"
           viewBox="0 0 28 28"
@@ -51,8 +55,8 @@
     </nav>
 
     <!-- 右：通知 + 窗口控制（贴右缘） -->
-    <div class="no-drag flex h-14 items-center justify-self-end">
-      <div class="flex items-center gap-2">
+    <div class="flex h-14 items-center justify-self-end">
+      <div class="no-drag flex items-center gap-2">
         <el-dropdown trigger="click" @command="handleThemeCommand">
           <el-button plain aria-label="主题切换">
             <el-icon

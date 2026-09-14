@@ -45,6 +45,7 @@ scripts/           构建与文档校验脚本
 
 ```sh
 npm run dev             # 启动 Electron 开发环境
+npm test                # Node 内置测试
 npm run lint            # ESLint + Prettier
 npm run typecheck       # vue-tsc --noEmit
 npm run build           # 图标、类型检查、生产构建
@@ -52,14 +53,14 @@ npm run verify:docs     # 文档链接、预算、决策记录格式
 npm run pack            # Windows NSIS 安装包
 ```
 
-代码改动完成前必须运行 `npm run typecheck` 与 `npm run build`。只改文档时也必须运行 `npm run verify:docs`；涉及提交时同时确认 lint 通过。
+代码改动完成前必须运行 `npm test`、`npm run typecheck` 与 `npm run build`。只改文档时也必须运行 `npm run verify:docs`；涉及提交时同时确认 lint 通过。
 
 ## 任务收尾自检
 
 - [ ] 代码行为变化是否已同步到正确的文档层级。
 - [ ] 非平凡取舍是否已有决策记录并包含 `## Alternatives considered`。
 - [ ] 是否运行 `npm run verify:docs`，且链接、预算、笔记格式全部通过。
-- [ ] 代码改动是否运行 `npm run typecheck` 与 `npm run build`。
+- [ ] 代码改动是否运行 `npm test`、`npm run typecheck` 与 `npm run build`。
 - [ ] 最终回复是否明确列出验证命令、结果和未验证项。
 
 本文件有字数预算，规则见 [docs/AGENTS.md](docs/AGENTS.md#预算与格式)，清单见 [scripts/doc-budgets.json](scripts/doc-budgets.json)。

@@ -47,10 +47,11 @@
 ## 验证
 
 ```sh
+npm test
 npm run lint
 npm run typecheck
 npm run build
 npm run verify:docs
 ```
 
-代码改动必须执行前 3 项。文档改动必须执行 `npm run verify:docs`；无法执行的项目必须在交付说明中列出。
+代码改动必须执行测试、lint、typecheck 和 build。文档改动必须执行 `npm run verify:docs`；无法执行的项目必须在交付说明中列出。

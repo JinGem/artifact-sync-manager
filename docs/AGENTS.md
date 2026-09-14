@@ -39,7 +39,7 @@
 
 ## 交叉链接与决策
 
-仓库内引用使用相对 Markdown 链接，不使用裸文件名或“见上文”。移动或重命名文档时，同一提交更新所有入链。非平凡取舍必须按 [.agents/notes/README.md](../.agents/notes/README.md) 新增或更新决策记录；机械改动豁免。任务收尾时更新受影响文档，运行 `npm run verify:docs`，代码改动再运行 typecheck 与 build，并在交付说明中列出结果。
+仓库内引用使用相对 Markdown 链接，不使用裸文件名或“见上文”。移动或重命名文档时，同一提交更新所有入链。非平凡取舍必须按 [.agents/notes/README.md](../.agents/notes/README.md) 新增或更新决策记录；机械改动豁免。任务收尾时更新受影响文档，运行 `npm run verify:docs`，代码改动再运行 test、typecheck 与 build，并在交付说明中列出结果。
 
 ## 预算与格式
 

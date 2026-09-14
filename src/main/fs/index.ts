@@ -1,7 +1,7 @@
 import { readdir, stat, mkdir, copyFile, writeFile, rm, readFile } from "original-fs/promises";
 import { join, relative, basename } from "node:path";
 
-import { compileRules, isIgnored, type IgnoreRule } from "./ignore";
+import { compileRules, isIgnored, type Ignore } from "./ignore";
 import { ErrorCode } from "./../errors";
 
 export interface ScannedFile {
@@ -52,7 +52,7 @@ const getCancelScope = (): CancelScope => {
 const walkDirectory = async (
   dir: string,
   basePath: string,
-  rules: IgnoreRule[],
+  rules: Ignore,
   files: ScannedFile[],
   ignoredFiles?: ScannedFile[],
   filterEntry?: (entry: string) => boolean,

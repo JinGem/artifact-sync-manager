@@ -8,6 +8,7 @@
     "dev": "electron-vite dev",
     "build": "node scripts/generate-icon.cjs && vue-tsc --noEmit && electron-vite build && node -e \"require('fs').cpSync('src/main/tray/tray-icon.png','out/main/tray-icon.png')\"",
     "preview": "electron-vite preview",
+    "test": "node --test --experimental-strip-types src/main/fs/ignore.test.mjs",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -73,6 +74,7 @@
   "license": "MIT",
   "dependencies": {
     "element-plus": "^2.11.4",
+    "ignore": "^5.3.2",
     "pinia": "^3.0.3",
     "vue": "^3.5.13",
     "vue-router": "^4.5.1"

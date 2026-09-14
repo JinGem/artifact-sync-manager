@@ -54,7 +54,7 @@ IPC 通道使用 `domain:action` 命名。主进程处理器位于 `src/main/ipc
 
 ## 任务与监控
 
-- 上传、下载和取消由 `src/main/fs/index.ts` 执行，`src/main/ipc/*` 只负责接收参数并转发进度。
+- 上传、下载和取消由 `src/main/fs/index.ts` 执行，`src/main/ipc/*` 只负责接收参数并转发进度。扫描规则由 `src/main/fs/ignore.ts` 包装 `ignore` 包执行。
 - `src/main/watch/directory-watcher.ts` 的 `watcherService` 按规范化远程目录去重。每个目录使用 30 秒轮询作为可靠路径，同时用 `fs.watch` 缩短变化响应时间；首次扫描建立版本快照基线。
 - 远程变化过滤本进程正在上传或删除的版本，然后通过 Electron Notification 和 `watch:remote-change` 发送给渲染层。
 - `src/main/tray/index.ts` 创建托盘菜单；窗口关闭事件隐藏窗口，`before-quit` 释放 watcher 和托盘。
@@ -76,5 +76,6 @@ IPC 通道使用 `domain:action` 命名。主进程处理器位于 `src/main/ipc
 - Electron 三进程与 Preload 白名单桥接：[2026-06-02-electron-三进程与-preload-白名单桥接.md](../.agents/notes/implemented/architecture/2026-06-02-electron-三进程与-preload-白名单桥接.md)
 - 远程版本目录与元数据布局：[2026-06-02-远程版本目录与元数据布局.md](../.agents/notes/implemented/architecture/2026-06-02-远程版本目录与元数据布局.md)
 - 远程目录监控采用轮询与 `fs.watch`：[2026-06-02-远程目录监控采用轮询与-fs-watch.md](../.agents/notes/implemented/architecture/2026-06-02-远程目录监控采用轮询与-fs-watch.md)
+- 排除规则改用 `ignore` 包：[2026-09-14-排除规则改用-ignore-库.md](../.agents/notes/implemented/bug-fix/2026-09-14-排除规则改用-ignore-库.md)
 - GitHub 风格主题令牌系统：[2026-08-08-github-风格主题令牌系统.md](../.agents/notes/implemented/architecture/2026-08-08-github-风格主题令牌系统.md)
 - 文档采用渐进式披露与决策记录：[2026-09-14-文档采用渐进式披露与决策记录.md](../.agents/notes/implemented/process/2026-09-14-文档采用渐进式披露与决策记录.md)
