@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Notification } from "electron";
+import { app, BrowserWindow } from "electron";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
@@ -13,6 +13,7 @@ import { watcherService } from "@main/watch/directory-watcher";
 import { appStateStore } from "@main/config/store";
 import { createTray } from "@main/tray";
 import { inProgressUploads, inProgressDeletes } from "@main/fs/index";
+import { showSystemNotification } from "@main/notification";
 
 function findIconPath(): string {
   const candidates = [
@@ -112,11 +113,7 @@ if (!gotLock) {
             ? `[${event.projectNames.join(", ")}] ${event.version} 已上传到 ${event.remoteDirectory}`
             : `[${event.projectNames.join(", ")}] ${event.version} 已从 ${event.remoteDirectory} 删除`;
 
-        try {
-          new Notification({ title, body }).show();
-        } catch {
-          // System notification may fail in headless/sandboxed environments
-        }
+        void showSystemNotification(title, body);
       }
 
       if (win && !win.isDestroyed()) {

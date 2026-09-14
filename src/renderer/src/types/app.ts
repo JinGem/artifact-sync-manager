@@ -1,12 +1,27 @@
+export interface NotificationSettings {
+  system: boolean;
+  inApp: boolean;
+}
+
 export interface AppSettings {
   operatorName: string;
   recentProjectId: string | null;
   role: "developer" | "tester";
+  notifications: NotificationSettings;
+}
+
+export interface ProjectGroup {
+  id: string;
+  name: string;
+  color: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ProjectConfig {
   id: string;
   name: string;
+  groupId: string | null;
   remoteDirectory: string;
   uploadLocalPath: string;
   downloadLocalPath: string;
@@ -19,19 +34,27 @@ export interface ProjectConfig {
 
 export interface AppState {
   settings: AppSettings;
+  groups: ProjectGroup[];
   projects: ProjectConfig[];
 }
 
-import type { VersionInfo as SharedVersionInfo } from "@shared/types";
+import type {
+  VersionInfo as SharedVersionInfo,
+  VersionSummary as SharedVersionSummary,
+} from "@shared/types";
 
 export type VersionInfo = SharedVersionInfo;
+export type VersionSummary = SharedVersionSummary;
 
 export interface ProjectDetail extends ProjectConfig {
   versions: VersionInfo[];
 }
 
 /** Draft form data matching ProjectConfig minus auto-generated fields. */
-export type ProjectDraft = Omit<ProjectConfig, "id" | "createdAt" | "updatedAt"> & { id?: string };
+export type ProjectDraft = Omit<ProjectConfig, "id" | "createdAt" | "updatedAt"> & {
+  id?: string;
+  newGroupName?: string;
+};
 
 export interface ScannedFile {
   relativePath: string;

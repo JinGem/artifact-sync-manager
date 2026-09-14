@@ -67,6 +67,42 @@
       </el-form>
     </el-card>
 
+    <!-- 通知 -->
+    <el-card shadow="never">
+      <template #header>
+        <span class="text-base font-semibold text-fg">通知</span>
+      </template>
+
+      <div class="divide-y divide-line-soft">
+        <div class="flex items-center justify-between gap-6 py-4 first:pt-0">
+          <div>
+            <p class="text-sm font-medium text-fg">Windows 通知</p>
+            <p class="mt-1 text-xs leading-5 text-muted">
+              在系统通知中心显示远程版本变化、上传完成和版本删除提醒。
+            </p>
+          </div>
+          <el-switch
+            v-model="systemNotifications"
+            :loading="savingNotifications"
+            @change="handleNotificationChange"
+          />
+        </div>
+        <div class="flex items-center justify-between gap-6 py-4 last:pb-0">
+          <div>
+            <p class="text-sm font-medium text-fg">应用内通知</p>
+            <p class="mt-1 text-xs leading-5 text-muted">
+              在应用窗口右上角显示版本变化以及上传、下载结果。
+            </p>
+          </div>
+          <el-switch
+            v-model="inAppNotifications"
+            :loading="savingNotifications"
+            @change="handleNotificationChange"
+          />
+        </div>
+      </div>
+    </el-card>
+
     <!-- 配置导入导出 -->
     <el-card shadow="never">
       <template #header>
@@ -76,12 +112,12 @@
       <div class="grid gap-4 md:grid-cols-2">
         <div class="rounded-md border border-line bg-canvas p-5">
           <p class="mb-1 text-sm font-medium text-fg">导出配置</p>
-          <p class="mb-4 text-xs text-muted">将当前操作者名称和所有项目配置导出为 JSON 文件。</p>
+          <p class="mb-4 text-xs text-muted">将当前组和所有项目配置导出为 JSON 文件。</p>
           <el-button :loading="exporting" @click="handleExport"> 导出 </el-button>
         </div>
         <div class="rounded-md border border-line bg-canvas p-5">
           <p class="mb-1 text-sm font-medium text-fg">导入配置</p>
-          <p class="mb-4 text-xs text-muted">从 JSON 文件导入配置。将替换当前项目列表。</p>
+          <p class="mb-4 text-xs text-muted">从 JSON 文件导入组和项目配置，同名项目会跳过。</p>
           <el-button :loading="importing" @click="handleImport"> 导入 </el-button>
         </div>
       </div>
@@ -151,6 +187,9 @@ const saving = ref(false);
 const exporting = ref(false);
 const importing = ref(false);
 const resetting = ref(false);
+const systemNotifications = ref(true);
+const inAppNotifications = ref(true);
+const savingNotifications = ref(false);
 
 const goBack = (): void => {
   router.push({ name: "home" });
@@ -160,6 +199,25 @@ const loadOperatorName = async (): Promise<void> => {
   const state = await api.getState();
   operatorName.value = state.settings.operatorName;
   userRole.value = state.settings.role;
+  systemNotifications.value = state.settings.notifications.system;
+  inAppNotifications.value = state.settings.notifications.inApp;
+};
+
+const handleNotificationChange = async (): Promise<void> => {
+  savingNotifications.value = true;
+  try {
+    const nextState = await api.saveNotificationSettings({
+      system: systemNotifications.value,
+      inApp: inAppNotifications.value,
+    });
+    systemNotifications.value = nextState.settings.notifications.system;
+    inAppNotifications.value = nextState.settings.notifications.inApp;
+    ElMessage.success("通知设置已保存。");
+  } catch (error) {
+    ElMessage.error(`保存通知设置失败：${(error as Error).message}`);
+  } finally {
+    savingNotifications.value = false;
+  }
 };
 
 const handleSave = async (): Promise<void> => {

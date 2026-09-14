@@ -40,7 +40,7 @@ export const registerSettingsIpc = (window: BrowserWindow): void => {
 
     const state = await appStateStore.getState();
     // Export only projects; operator name is local preference, not shared
-    const exportData = { projects: state.projects };
+    const exportData = { groups: state.groups, projects: state.projects };
     await writeFile(result.filePath, JSON.stringify(exportData, null, 2), "utf-8");
     return result.filePath;
   });

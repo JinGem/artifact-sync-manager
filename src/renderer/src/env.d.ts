@@ -1,6 +1,7 @@
 import type {
   AppState,
   ProjectDraft,
+  VersionSummary,
   VersionInfo,
   ScannedFile,
   ScanResult,
@@ -28,11 +29,18 @@ declare global {
         operatorName: string;
         role: "developer" | "tester";
       }) => Promise<AppState>;
+      saveNotificationSettings: (settings: {
+        system: boolean;
+        inApp: boolean;
+      }) => Promise<AppState>;
+      saveGroup: (group: { id?: string; name: string; color?: string }) => Promise<AppState>;
+      deleteGroup: (groupId: string) => Promise<AppState>;
       saveProject: (project: ProjectDraft) => Promise<AppState>;
       deleteProject: (projectId: string) => Promise<AppState>;
       setRecentProject: (projectId: string) => Promise<AppState>;
       chooseDirectory: () => Promise<string | null>;
       scanVersions: (remoteDirectory: string) => Promise<VersionInfo[]>;
+      scanVersionSummaries: (remoteDirectories: string[]) => Promise<VersionSummary[]>;
       deleteVersion: (remoteDirectory: string, version: string) => Promise<void>;
       deleteVersions: (
         remoteDirectory: string,

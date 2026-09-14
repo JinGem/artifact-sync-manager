@@ -1,7 +1,8 @@
 import { readdir, stat, rm, readFile, lstat } from "original-fs/promises";
 import { join, resolve, sep } from "node:path";
 
-import type { VersionInfo } from "@shared/types";
+import type { VersionInfo, VersionSummary } from "@shared/types";
+import { summarizeVersions } from "@shared/version-retention";
 
 const SEMVER_REGEX = /^v\d+\.\d+\.\d+$/;
 
@@ -26,6 +27,22 @@ const safeDelete = async (dirPath: string): Promise<void> => {
     } else {
       await rm(fullPath);
     }
+  }
+};
+
+export const scanVersionSummary = async (remoteDirectory: string): Promise<VersionSummary> => {
+  try {
+    return summarizeVersions(remoteDirectory, await scanVersions(remoteDirectory));
+  } catch {
+    return {
+      remoteDirectory,
+      total: 0,
+      recentCount: 0,
+      expiredVersions: [],
+      unknownDateCount: 0,
+      latestVersion: null,
+      scanFailed: true,
+    };
   }
 };
 
@@ -58,16 +75,23 @@ export const scanVersions = async (remoteDirectory: string): Promise<VersionInfo
       continue;
     }
 
-    // 读取 .version.json 获取描述和操作者
+    // 读取 .version.json 获取描述、操作者和权威上传时间
     let description = "";
     let operator = "";
+    let uploadedAt: string | null = null;
     try {
       const metadataRaw = await readFile(join(fullPath, ".version.json"), "utf-8");
       const metadata = JSON.parse(metadataRaw);
       description = metadata.description ?? "";
       operator = metadata.operator ?? "";
+      if (
+        typeof metadata.uploadedAt === "string" &&
+        Number.isFinite(Date.parse(metadata.uploadedAt))
+      ) {
+        uploadedAt = metadata.uploadedAt;
+      }
     } catch {
-      // 旧版本没有 .version.json，留空
+      // 无元数据或格式异常时保留目录时间，自动清理不会使用无效日期
     }
 
     results.push({
@@ -76,6 +100,7 @@ export const scanVersions = async (remoteDirectory: string): Promise<VersionInfo
       operator,
       createdAt: stats.birthtime.toISOString(),
       updatedAt: stats.mtime.toISOString(),
+      uploadedAt,
     });
   }
 

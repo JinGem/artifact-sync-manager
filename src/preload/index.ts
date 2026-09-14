@@ -10,6 +10,10 @@ contextBridge.exposeInMainWorld("artifactSync", {
     ipcRenderer.invoke("config:save-operator-name", operatorName),
   saveUserProfile: (profile: { operatorName: string; role: "developer" | "tester" }) =>
     ipcRenderer.invoke("config:save-user-profile", profile),
+  saveNotificationSettings: (settings: { system: boolean; inApp: boolean }) =>
+    ipcRenderer.invoke("config:save-notification-settings", settings),
+  saveGroup: (group: unknown) => ipcRenderer.invoke("group:save", group),
+  deleteGroup: (groupId: string) => ipcRenderer.invoke("group:delete", groupId),
   saveProject: (project: unknown) => ipcRenderer.invoke("config:save-project", project),
   deleteProject: (projectId: string) => ipcRenderer.invoke("config:delete-project", projectId),
   setRecentProject: (projectId: string) =>
@@ -17,6 +21,8 @@ contextBridge.exposeInMainWorld("artifactSync", {
   chooseDirectory: () => ipcRenderer.invoke("dialog:choose-directory"),
   scanVersions: (remoteDirectory: string) =>
     ipcRenderer.invoke("version:scan-versions", remoteDirectory),
+  scanVersionSummaries: (remoteDirectories: string[]) =>
+    ipcRenderer.invoke("version:scan-summaries", remoteDirectories),
   deleteVersion: (remoteDirectory: string, version: string) =>
     ipcRenderer.invoke("version:delete-version", remoteDirectory, version),
   deleteVersions: (remoteDirectory: string, versions: string[]) =>

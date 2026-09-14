@@ -16,6 +16,16 @@ export const registerConfigIpc = (window: BrowserWindow): void => {
       appStateStore.saveUserProfile(profile),
   );
 
+  ipcMain.handle("config:save-notification-settings", async (_event, settings) =>
+    appStateStore.saveNotificationSettings(settings),
+  );
+
+  ipcMain.handle("group:save", async (_event, group) => appStateStore.saveGroup(group));
+
+  ipcMain.handle("group:delete", async (_event, groupId: string) =>
+    appStateStore.deleteGroup(groupId),
+  );
+
   ipcMain.handle("config:save-project", async (_event, project) => {
     const oldState = await appStateStore.getState();
     const oldProject = project.id ? oldState.projects.find((p) => p.id === project.id) : null;

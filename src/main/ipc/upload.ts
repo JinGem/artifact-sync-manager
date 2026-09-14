@@ -1,8 +1,9 @@
-import { ipcMain, Notification, type BrowserWindow } from "electron";
+import { ipcMain, type BrowserWindow } from "electron";
 import { setTimeout } from "node:timers";
 
 import { scanFiles, uploadVersion, requestCancel, inProgressUploads } from "@main/fs/index";
 import { appStateStore } from "@main/config/store";
+import { showSystemNotification } from "@main/notification";
 
 /**
  * Delay removal from inProgressUploads so the async directory watcher
@@ -57,14 +58,7 @@ export const registerUploadIpc = (window: BrowserWindow): void => {
         delayCleanup(uploadKey);
 
         const projectName = options.projectName || "unknown";
-        try {
-          new Notification({
-            title: "上传完成",
-            body: `${projectName} · 版本 ${options.version} 已上传`,
-          }).show();
-        } catch {
-          // System notification may fail in headless/sandboxed environments
-        }
+        await showSystemNotification("上传完成", `${projectName} · 版本 ${options.version} 已上传`);
 
         if (!window.isDestroyed()) {
           window.webContents.send("upload:completed", {

@@ -77,11 +77,28 @@
       class="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-line bg-page p-7 shadow-sm"
     >
       <div class="flex shrink-0 items-center justify-between px-6 pb-3 pt-5">
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
           <span class="text-sm font-semibold text-fg">版本列表</span>
-          <el-tag size="small" type="success" effect="plain"> {{ versions.length }} 个版本 </el-tag>
+          <el-tag size="small" type="success" effect="plain">
+            近 7 天 {{ recentVersions.length }} 个
+          </el-tag>
+          <el-tag size="small" type="info" effect="plain"> 共 {{ versions.length }} 个 </el-tag>
         </div>
-        <el-button plain :loading="loading" :icon="Refresh" @click="loadVersions"> 刷新 </el-button>
+        <div class="flex items-center gap-2">
+          <el-button v-if="hiddenVersionCount > 0 || showAllVersions" text @click="toggleShowAll">
+            {{ showAllVersions ? "收起较早版本" : `查看更多（${hiddenVersionCount} 个较早版本）` }}
+          </el-button>
+          <el-button plain :loading="loading" :icon="Refresh" @click="loadVersions">
+            刷新
+          </el-button>
+        </div>
+      </div>
+
+      <div
+        v-if="currentVersionIsOld && !showAllVersions"
+        class="mx-6 mb-3 rounded-md border border-warning-line bg-warning-soft px-4 py-2.5 text-sm text-fg-2"
+      >
+        当前使用版本 {{ project?.currentDownloadedVersion }} 不在近 7 天内，点击“查看更多”可查看。
       </div>
 
       <!-- 浮动操作栏 -->
@@ -122,16 +139,25 @@
 
         <!-- 空状态 -->
         <div
-          v-else-if="versions.length === 0"
+          v-else-if="sortedVersions.length === 0"
           class="flex flex-1 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-line bg-canvas"
         >
           <div class="flex h-12 w-12 items-center justify-center rounded-md bg-canvas-2">
             <el-icon :size="22" color="var(--as-subtle)"><FolderOpened /></el-icon>
           </div>
           <div class="text-center">
-            <p class="text-sm font-medium text-fg-2">暂无版本</p>
-            <p class="mt-1 text-sm text-muted">上传首个版本后列表将在此展示</p>
+            <p class="text-sm font-medium text-fg-2">
+              {{ versions.length === 0 ? "暂无版本" : "近 7 天暂无版本" }}
+            </p>
+            <p class="mt-1 text-sm text-muted">
+              {{
+                versions.length === 0
+                  ? "上传首个版本后列表将在此展示"
+                  : `共有 ${versions.length} 个较早版本`
+              }}
+            </p>
           </div>
+          <el-button v-if="hiddenVersionCount > 0" @click="toggleShowAll">查看全部版本</el-button>
         </div>
 
         <!-- 版本表格 -->
@@ -145,6 +171,7 @@
           rowKey="name"
           @sort-change="handleSortChange"
           @selection-change="handleSelectionChange"
+          @row-click="handleRowClick"
           class="version-table"
         >
           <!-- 选择列 -->
@@ -183,20 +210,22 @@
           <!-- 日期 -->
           <el-table-column prop="createdAt" label="日期" width="170" sortable="custom">
             <template #default="{ row }">
-              <span class="text-sm text-muted">{{ formatTime(row.createdAt) }}</span>
+              <span class="text-sm text-muted">{{ formatVersionTime(row) }}</span>
             </template>
           </el-table-column>
 
           <!-- 版本说明 -->
           <el-table-column prop="description" label="版本说明" minWidth="180">
             <template #default="{ row }">
-              <p
+              <button
                 v-if="row.description"
-                class="max-w-90 truncate text-sm text-fg-2"
+                type="button"
+                class="max-w-90 cursor-pointer truncate text-left text-sm text-fg-2 transition-colors hover:text-accent"
                 :title="row.description"
+                @click.stop="openDescription(row)"
               >
                 {{ row.description }}
-              </p>
+              </button>
               <span v-else class="text-sm text-subtle">—</span>
             </template>
           </el-table-column>
@@ -204,7 +233,7 @@
           <!-- 操作 -->
           <el-table-column label="操作" width="180" fixed="right">
             <template #default="{ row }">
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2" @click.stop>
                 <el-button
                   type="success"
                   plain
@@ -271,11 +300,51 @@
       v-if="project"
       v-model:visible="showEditDialog"
       :project="project"
+      :groups="groups"
       @saved="handleEditSaved"
     />
 
+    <el-dialog v-model="showDescriptionDialog" title="版本详情" width="560px">
+      <div v-if="selectedDescriptionVersion" class="space-y-5">
+        <div class="flex flex-wrap items-center gap-3 border-b border-line-soft pb-4">
+          <span class="font-mono text-lg font-semibold text-fg">
+            {{ selectedDescriptionVersion.name }}
+          </span>
+          <el-tag
+            v-if="project?.currentDownloadedVersion === selectedDescriptionVersion.name"
+            size="small"
+            type="success"
+            effect="plain"
+          >
+            当前版本
+          </el-tag>
+        </div>
+        <div class="grid gap-3 text-sm sm:grid-cols-2">
+          <div class="rounded-md bg-canvas px-3.5 py-2.5">
+            <p class="text-xs text-subtle">操作者</p>
+            <p class="mt-1 text-fg-2">{{ selectedDescriptionVersion.operator || "—" }}</p>
+          </div>
+          <div class="rounded-md bg-canvas px-3.5 py-2.5">
+            <p class="text-xs text-subtle">上传时间</p>
+            <p class="mt-1 text-fg-2">{{ formatVersionTime(selectedDescriptionVersion) }}</p>
+          </div>
+        </div>
+        <div>
+          <p class="mb-2 text-xs text-subtle">版本说明</p>
+          <div
+            class="max-h-[45vh] overflow-y-auto whitespace-pre-wrap break-words rounded-md border border-line bg-canvas px-4 py-3 text-sm leading-6 text-fg-2"
+          >
+            {{ selectedDescriptionVersion.description || "暂无版本说明" }}
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="showDescriptionDialog = false">关闭</el-button>
+      </template>
+    </el-dialog>
+
     <!-- 批量删除确认弹窗 -->
-    <el-dialog v-model="showBatchDeleteConfirm" title="批量删除版本" width="480px" top="15vh">
+    <el-dialog v-model="showBatchDeleteConfirm" title="批量删除版本" width="480px">
       <div class="space-y-4">
         <div class="rounded-md border border-danger-line bg-danger-soft px-4 py-3">
           <p class="text-sm font-medium text-danger">危险操作</p>
@@ -316,7 +385,12 @@ import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { ArrowLeft, Refresh, Loading, Upload, FolderOpened } from "@element-plus/icons-vue";
 
-import type { ProjectConfig, VersionInfo, AppState } from "@renderer/types/app";
+import {
+  compareVersionNames,
+  getVersionTimestamp,
+  isVersionRecent,
+} from "@shared/version-retention";
+import type { ProjectConfig, ProjectGroup, VersionInfo, AppState } from "@renderer/types/app";
 import UploadDialog from "@renderer/components/UploadDialog.vue";
 import DownloadDialog from "@renderer/components/DownloadDialog.vue";
 import ProjectConfigDialog from "@renderer/components/ProjectConfigDialog.vue";
@@ -327,6 +401,7 @@ const api = window.artifactSync;
 
 const projectId = computed(() => route.params.projectId as string);
 const project = ref<ProjectConfig | null>(null);
+const groups = ref<ProjectGroup[]>([]);
 const userRole = ref<"developer" | "tester">("developer");
 const versions = ref<VersionInfo[]>([]);
 const versionTableRef = ref();
@@ -341,6 +416,9 @@ const showDownloadDialog = ref(false);
 const showEditDialog = ref(false);
 const downloadVersion = ref("");
 const downloadDescription = ref("");
+const showAllVersions = ref(false);
+const showDescriptionDialog = ref(false);
+const selectedDescriptionVersion = ref<VersionInfo | null>(null);
 
 interface SortState {
   prop: string;
@@ -349,23 +427,23 @@ interface SortState {
 
 const sortState = ref<SortState>({ prop: "createdAt", order: "descending" });
 
-const compareSemver = (a: string, b: string): number => {
-  const aParts = a.replace(/^v/i, "").split(".").map(Number);
-  const bParts = b.replace(/^v/i, "").split(".").map(Number);
-  for (let i = 0; i < 3; i++) {
-    if ((aParts[i] || 0) !== (bParts[i] || 0)) return (aParts[i] || 0) - (bParts[i] || 0);
-  }
-  return 0;
-};
+const recentVersions = computed(() => versions.value.filter((version) => isVersionRecent(version)));
+const hiddenVersionCount = computed(() => versions.value.length - recentVersions.value.length);
+const currentVersionIsOld = computed(() => {
+  const current = project.value?.currentDownloadedVersion;
+  if (!current) return false;
+  const version = versions.value.find((item) => item.name === current);
+  return version ? !isVersionRecent(version) : false;
+});
 
 const sortedVersions = computed(() => {
-  const arr = [...versions.value];
+  const arr = showAllVersions.value ? [...versions.value] : [...recentVersions.value];
   if (!sortState.value.order || !sortState.value.prop) return arr;
   arr.sort((a, b) => {
     const cmp =
       sortState.value.prop === "name"
-        ? compareSemver(a.name, b.name)
-        : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        ? compareVersionNames(a.name, b.name)
+        : (getVersionTimestamp(a) ?? 0) - (getVersionTimestamp(b) ?? 0);
     return sortState.value.order === "ascending" ? cmp : -cmp;
   });
   return arr;
@@ -373,6 +451,11 @@ const sortedVersions = computed(() => {
 
 const handleSortChange = ({ prop, order }: SortState): void => {
   sortState.value = { prop, order };
+};
+
+const toggleShowAll = (): void => {
+  showAllVersions.value = !showAllVersions.value;
+  clearSelection();
 };
 
 const tableRowClassName = ({ row }: { row: VersionInfo }): string => {
@@ -395,6 +478,20 @@ const formatTime = (iso: string): string => {
   });
 };
 
+const formatVersionTime = (version: VersionInfo): string => {
+  return formatTime(version.uploadedAt ?? version.createdAt);
+};
+
+const openDescription = (version: VersionInfo): void => {
+  selectedDescriptionVersion.value = version;
+  showDescriptionDialog.value = true;
+};
+
+const handleRowClick = (row: VersionInfo, column: { type?: string }): void => {
+  if (column?.type === "selection") return;
+  openDescription(row);
+};
+
 const openEditDialog = (): void => {
   showEditDialog.value = true;
 };
@@ -412,6 +509,7 @@ const handleEditSaved = (nextState: AppState): void => {
   if (updated) {
     project.value = updated;
   }
+  groups.value = nextState.groups;
   ElMessage.success("项目配置已更新。");
 };
 
@@ -430,6 +528,7 @@ const loadProject = async (): Promise<void> => {
   const state = await api.getState();
   const found = state.projects.find((p) => p.id === currentProjectId);
   userRole.value = state.settings.role;
+  groups.value = state.groups;
 
   if (!found) {
     ElMessage.error("项目不存在");
@@ -566,6 +665,10 @@ onMounted(async () => {
   font-weight: 500;
   color: var(--as-muted);
   border-bottom: 1px solid var(--as-line);
+}
+
+.version-table .el-table__body tr {
+  cursor: pointer;
 }
 
 .version-table .el-table__body td.el-table__cell {

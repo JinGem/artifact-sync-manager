@@ -252,7 +252,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { ElMessage, ElNotification } from "element-plus";
+import { ElMessage } from "element-plus";
+import { showInAppNotification } from "@renderer/services/notification";
 import {
   Download,
   CircleCheckFilled,
@@ -569,7 +570,8 @@ const handleStartDownload = async (): Promise<void> => {
       completedAt: new Date().toISOString(),
     });
     emit("done", props.versionName);
-    ElNotification.success({
+    void showInAppNotification({
+      type: "success",
       title: "下载完成",
       message: `${props.projectName} · 版本 ${props.versionName} 已下载`,
       duration: 3000,
@@ -590,7 +592,8 @@ const handleStartDownload = async (): Promise<void> => {
         visible.value = false;
       }, 600);
     } else {
-      ElNotification.error({
+      void showInAppNotification({
+        type: "error",
         title: "下载失败",
         message: (error as Error).message,
         duration: 0,

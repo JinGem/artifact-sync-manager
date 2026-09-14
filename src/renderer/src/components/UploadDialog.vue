@@ -222,7 +222,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { ElMessage, ElNotification } from "element-plus";
+import { ElMessage } from "element-plus";
+import { showInAppNotification } from "@renderer/services/notification";
 import {
   Upload,
   UploadFilled,
@@ -542,7 +543,8 @@ const handleStartUpload = async (): Promise<void> => {
       completedAt: new Date().toISOString(),
     });
     emit("done");
-    ElNotification.success({
+    void showInAppNotification({
+      type: "success",
       title: "上传完成",
       message: `${props.projectName} · 版本 ${versionStr} 已上传`,
       duration: 3000,
@@ -563,7 +565,8 @@ const handleStartUpload = async (): Promise<void> => {
         visible.value = false;
       }, 600);
     } else {
-      ElNotification.error({
+      void showInAppNotification({
+        type: "error",
         title: "上传失败",
         message: (error as Error).message,
         duration: 0,

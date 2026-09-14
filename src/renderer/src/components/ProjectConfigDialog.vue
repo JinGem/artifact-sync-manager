@@ -24,6 +24,30 @@
           <el-input v-model="form.name" placeholder="例如：demo-app" maxlength="80" clearable />
         </el-form-item>
 
+        <el-form-item label="所属组" class="md:col-span-2">
+          <el-select
+            v-model="form.groupId"
+            filterable
+            allowCreate
+            defaultFirstOption
+            clearable
+            placeholder="选择或输入新组"
+            class="w-full"
+          >
+            <el-option
+              v-for="group in groups"
+              :key="group.id"
+              :label="group.name"
+              :value="group.id"
+            >
+              <span class="flex items-center gap-2">
+                <span class="h-2.5 w-2.5 rounded-full" :style="{ backgroundColor: group.color }" />
+                {{ group.name }}
+              </span>
+            </el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="远程目录" class="md:col-span-2">
           <div class="flex w-full gap-3">
             <el-input
@@ -105,14 +129,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { EditPen, Plus } from "@element-plus/icons-vue";
-import type { AppState, ProjectConfig, ProjectDraft } from "@renderer/types/app";
+import type { AppState, ProjectConfig, ProjectDraft, ProjectGroup } from "@renderer/types/app";
 
 const props = defineProps<{
   visible: boolean;
   project?: ProjectConfig | null;
+  groups?: ProjectGroup[];
+  initialGroupId?: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -124,8 +150,11 @@ const api = window.artifactSync;
 const saving = ref(false);
 const editingProjectId = ref<string | null>(null);
 
+const groups = computed(() => props.groups ?? []);
+
 const defaultForm = (): ProjectDraft => ({
   name: "",
+  groupId: null,
   remoteDirectory: "",
   uploadLocalPath: "",
   downloadLocalPath: "",
@@ -180,14 +209,25 @@ watch(
           downloadLocalPath: props.project.downloadLocalPath,
           uploadRules: props.project.uploadRules,
           downloadRules: props.project.downloadRules,
+          groupId: props.project.groupId,
         });
       } else {
         editingProjectId.value = null;
-        Object.assign(form, defaultForm());
+        Object.assign(form, defaultForm(), { groupId: props.initialGroupId ?? null });
         loadDraft();
       }
     }
   },
+);
+
+watch(
+  groups,
+  (items) => {
+    if (form.groupId && !items.some((group) => group.id === form.groupId)) {
+      form.groupId = null;
+    }
+  },
+  { deep: true },
 );
 
 watch(
@@ -215,9 +255,13 @@ const handleSave = async (): Promise<void> => {
 
   saving.value = true;
   try {
+    const selectedGroup = form.groupId?.trim() || null;
+    const isExistingGroup = groups.value.some((group) => group.id === selectedGroup);
     const nextState = await api.saveProject({
       ...form,
       id: editingProjectId.value ?? undefined,
+      groupId: isExistingGroup ? selectedGroup : null,
+      newGroupName: selectedGroup && !isExistingGroup ? selectedGroup : undefined,
     });
     clearDraft();
     emit("saved", nextState);

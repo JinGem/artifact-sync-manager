@@ -1,9 +1,10 @@
-import { ipcMain, Notification, type BrowserWindow } from "electron";
+import { ipcMain, type BrowserWindow } from "electron";
 import { setTimeout } from "node:timers";
 
-import { scanVersions, deleteVersion } from "@main/version/index";
+import { scanVersions, scanVersionSummary, deleteVersion } from "@main/version/index";
 import { inProgressDeletes } from "@main/fs/index";
 import { appStateStore } from "@main/config/store";
+import { showSystemNotification } from "@main/notification";
 
 const assertDeveloperRole = async (): Promise<void> => {
   const state = await appStateStore.getState();
@@ -26,6 +27,22 @@ export const registerVersionIpc = (window: BrowserWindow): void => {
     return scanVersions(remoteDirectory);
   });
 
+  ipcMain.handle("version:scan-summaries", async (_event, remoteDirectories: string[]) => {
+    const directories = [...new Set(remoteDirectories.filter(Boolean))];
+    const results = new Array(directories.length);
+    let cursor = 0;
+
+    const workers = Array.from({ length: Math.min(3, directories.length) }, async () => {
+      while (cursor < directories.length) {
+        const index = cursor++;
+        results[index] = await scanVersionSummary(directories[index]);
+      }
+    });
+
+    await Promise.all(workers);
+    return results;
+  });
+
   ipcMain.handle(
     "version:delete-version",
     async (_event, remoteDirectory: string, version: string) => {
@@ -45,14 +62,7 @@ export const registerVersionIpc = (window: BrowserWindow): void => {
         const project = state.projects.find((p) => p.remoteDirectory === remoteDirectory);
         const projectName = project?.name || "unknown";
 
-        try {
-          new Notification({
-            title: "版本已删除",
-            body: `${projectName} · 版本 ${version} 已删除`,
-          }).show();
-        } catch {
-          // System notification may fail in headless/sandboxed environments
-        }
+        await showSystemNotification("版本已删除", `${projectName} · 版本 ${version} 已删除`);
 
         if (!window.isDestroyed()) {
           window.webContents.send("version:deleted", {
@@ -97,14 +107,10 @@ export const registerVersionIpc = (window: BrowserWindow): void => {
         const project = state.projects.find((p) => p.remoteDirectory === remoteDirectory);
         const projectName = project?.name || "unknown";
 
-        try {
-          new Notification({
-            title: "版本批量删除完成",
-            body: `${projectName} · 成功删除 ${succeeded.length} 个版本${failed.length > 0 ? `，${failed.length} 个失败` : ""}`,
-          }).show();
-        } catch {
-          // System notification may fail in headless/sandboxed environments
-        }
+        await showSystemNotification(
+          "版本批量删除完成",
+          `${projectName} · 成功删除 ${succeeded.length} 个版本${failed.length > 0 ? `，${failed.length} 个失败` : ""}`,
+        );
 
         if (!window.isDestroyed()) {
           window.webContents.send("version:batch-deleted", {

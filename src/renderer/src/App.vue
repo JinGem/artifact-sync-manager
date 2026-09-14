@@ -1,5 +1,5 @@
 <template>
-  <el-config-provider namespace="el">
+  <el-config-provider namespace="el" :dialog="{ alignCenter: true }">
     <div class="flex h-full flex-col bg-page">
       <!-- 自定义窗口 Header（含窗口控制） -->
       <WindowHeader />
@@ -17,7 +17,6 @@
       :closeOnPressEscape="false"
       :showClose="false"
       width="440px"
-      top="10vh"
     >
       <template #header>
         <div class="p-4 text-center">
@@ -95,9 +94,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import { RouterView } from "vue-router";
-import { ElMessage, ElNotification } from "element-plus";
+import { ElMessage } from "element-plus";
 import { User } from "@element-plus/icons-vue";
 import WindowHeader from "@renderer/components/WindowHeader.vue";
+import { showInAppNotification } from "@renderer/services/notification";
 
 const api = window.artifactSync;
 
@@ -135,14 +135,14 @@ onMounted(async () => {
     for (const event of events) {
       const names = event.projectNames.join(", ");
       if (event.type === "version-added") {
-        ElNotification({
+        void showInAppNotification({
           title: "新版本已上传",
           message: `[${names}] ${event.version} 已上传到 ${event.remoteDirectory}`,
           type: "success",
           duration: 5000,
         });
       } else {
-        ElNotification({
+        void showInAppNotification({
           title: "版本已删除",
           message: `[${names}] ${event.version} 已从 ${event.remoteDirectory} 删除`,
           type: "warning",

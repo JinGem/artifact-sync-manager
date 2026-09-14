@@ -8,7 +8,7 @@
     "dev": "electron-vite dev",
     "build": "node scripts/generate-icon.cjs && vue-tsc --noEmit && electron-vite build && node -e \"require('fs').cpSync('src/main/tray/tray-icon.png','out/main/tray-icon.png')\"",
     "preview": "electron-vite preview",
-    "test": "node --test --experimental-strip-types src/main/fs/ignore.test.mjs",
+    "test": "node --test --experimental-strip-types src/main/fs/ignore.test.mjs src/shared/version-retention.test.mjs",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
