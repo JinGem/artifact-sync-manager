@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/JinGem/artifact-sync-manager/compare/v1.1.0...v1.2.0) (2026-09-14)
+
+
+### Features
+
+* 增加组管理、版本保留与通知设置 ([44f2fe9](https://github.com/JinGem/artifact-sync-manager/commit/44f2fe9756b459ac1c06d3deef33138292e210da))
+
+
+### Bug Fixes
+
+* 修复标题栏拖拽与排除规则 ([d0420ac](https://github.com/JinGem/artifact-sync-manager/commit/d0420ac04c04bab64c13bdb7c0edd81b726334a9))
+
 ## [1.1.0](https://github.com/JinGem/artifact-sync-manager/compare/v1.0.0...v1.1.0) (2026-08-08)
 
 
