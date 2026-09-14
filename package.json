@@ -11,6 +11,7 @@
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "verify:docs": "node scripts/verify-docs.mjs",
     "prepare": "husky",
     "pack": "npm run build && electron-builder --win --config"
   },

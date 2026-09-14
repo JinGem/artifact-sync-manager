@@ -23,12 +23,12 @@ export default [
   js.configs.recommended,
 
   {
-    files: ["scripts/**/*.cjs"],
+    files: ["scripts/**/*.{cjs,mjs}", ".claude/hooks/**/*.mjs"],
     languageOptions: {
       globals: {
         Buffer: "readonly",
-        __dirname: "readonly",
         console: "readonly",
+        __dirname: "readonly",
         require: "readonly",
         process: "readonly",
         module: "readonly",

@@ -18,5 +18,7 @@ release/
 
 # 项目级个人技能
 .codex/
+# Claude Code 个人本地配置（不提交）
+.claude/settings.local.json
 # 已废弃的原型页面
 ai_studio_code.html
