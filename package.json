@@ -1,6 +1,6 @@
 {
   "name": "artifact-sync-manager",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Windows desktop tool for internal artifact upload, download, and version management.",
   "main": "out/main/index.js",
   "type": "module",
